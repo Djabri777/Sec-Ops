@@ -11,14 +11,14 @@
 
 
 ## 🔮 Default users : (for each role)
-Role / User,Email,Password
+` Role / User,Email,Password
 Admin,admin@gmail.com,123456
 Client 1,client@gmail.com,123456
 Client 2,client2@gmail.com,123456
 Client 3,client3@gmail.com,123456
 Pentester 1,pentester@gmail.com,123456
 Pentester 2,pentester2@gmail.com,123456
-Pentester 3,pentester3@gmail.com,123456
+Pentester 3,pentester3@gmail.com,123456 `
 
 ## 🚀 Key Features
 * **Production Ready**: Optimized routing using `basename="/Sec-Ops-version-1"` for seamless GitHub Pages deployment.
