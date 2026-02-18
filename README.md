@@ -10,11 +10,15 @@
 **SecOps** is an integrated cybersecurity service platform developed to empower **Start-Ups and Small Enterprises**. It serves as a professional digital gateway to access specialized security assessments, following a strict industry methodology: **Reconnaissance ➡️ Scanning ➡️ Vulnerability Assessment ➡️ Exploitation ➡️ Reporting**.
 
 
-## 🔮 Future Roadmap & Updates
-The following updates are planned for the next phase of development:
-* **Role-Based Dashboards**: Implementation of specialized dashboards for the **Client**, **Admin**, and **Pentester**.
-* **Database Integration**: Matching the platform with a **Firebase database** for real-time data and authentication.
-* **UI/UX Refinement**: Fix the text color in **Light Mode** to ensure consistent accessibility and contrast.
+## 🔮 Default users : (for each role)
+Role / User,Email,Password
+Admin,admin@gmail.com,123456
+Client 1,client@gmail.com,123456
+Client 2,client2@gmail.com,123456
+Client 3,client3@gmail.com,123456
+Pentester 1,pentester@gmail.com,123456
+Pentester 2,pentester2@gmail.com,123456
+Pentester 3,pentester3@gmail.com,123456
 
 ## 🚀 Key Features
 * **Production Ready**: Optimized routing using `basename="/Sec-Ops-version-1"` for seamless GitHub Pages deployment.
