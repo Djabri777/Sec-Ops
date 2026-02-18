@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { 
-  Mail, 
-  MapPin, 
-  Phone, 
+import { useState } from 'react';
+import {
+  Mail,
+  MapPin,
+  Phone,
   Send,
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLang } from '../contexts/LanguageContext';
 
 const ContactPage = () => {
+  const { t } = useLang();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,39 +22,26 @@ const ContactPage = () => {
     message: ''
   });
 
-  const [formStatus, setFormStatus] = useState(null); // 'success', 'error', or null
+  const [formStatus, setFormStatus] = useState(null);
 
   const serviceTypes = [
-    'Web Application Pentesting',
-    'Network Security Audit',
-    'Red Team Operations',
+    t("contact.serviceWeb"),
+    t("contact.serviceNetwork"),
+    t("contact.serviceRedTeam"),
+    t("contact.serviceCompliance"),
+    t("contact.serviceOther"),
   ];
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Simulate form submission
     console.log('Form submitted:', formData);
-    
-    // Show success message
     setFormStatus('success');
-    
-    // Reset form after 3 seconds
     setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        serviceType: '',
-        message: ''
-      });
+      setFormData({ name: '', email: '', company: '', phone: '', serviceType: '', message: '' });
       setFormStatus(null);
     }, 3000);
   };
@@ -59,17 +49,17 @@ const ContactPage = () => {
   const contactInfo = [
     {
       icon: <MapPin className="w-6 h-6 text-blue-400" />,
-      title: "Office Location",
-details: ["Djelfa, Algeria", "Available for remote consultations"]
+      title: t("contact.officeTitle"),
+      details: [t("contact.officeLocation"), "Available for remote consultations"]
     },
     {
       icon: <Mail className="w-6 h-6 text-blue-400" />,
-      title: "Email",
+      title: t("contact.emailTitle"),
       details: ["contact@secops.dz", "Response within 24 hours"]
     },
     {
       icon: <Phone className="w-6 h-6 text-blue-400" />,
-      title: "Phone",
+      title: t("contact.phoneTitle"),
       details: ["+213 665 869 346", "24/7 support for Enterprise clients"]
     }
   ];
@@ -79,7 +69,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
+
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center max-w-4xl mx-auto">
             <motion.div
@@ -88,7 +78,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
               className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6"
             >
               <Send className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400">Get In Touch</span>
+              <span className="text-sm text-blue-400">{t("contact.badge")}</span>
             </motion.div>
 
             <motion.h1
@@ -97,10 +87,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
               transition={{ delay: 0.1 }}
               className="text-5xl sm:text-6xl font-bold mb-6 leading-tight text-zinc-100"
             >
-              Let's Secure Your{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                Digital Future
-              </span>
+              {t("contact.heroTitle")}
             </motion.h1>
 
             <motion.p
@@ -109,8 +96,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
               transition={{ delay: 0.2 }}
               className="text-xl text-zinc-300 mb-10 leading-relaxed max-w-3xl mx-auto"
             >
-              Ready to take the first step toward enterprise-grade security? 
-              Reach out to our team and we'll schedule a free consultation.
+              {t("contact.heroSubtitle")}
             </motion.p>
           </div>
         </div>
@@ -135,7 +121,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                   {/* Name */}
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-zinc-300 mb-2">
-                      Full Name <span className="text-blue-400">*</span>
+                      {t("contact.nameLabel")} <span className="text-blue-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -145,14 +131,14 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-400 transition-colors"
-                      placeholder="Ahmed Benali"
+                      placeholder={t("contact.namePlaceholder")}
                     />
                   </div>
 
                   {/* Email */}
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
-                      Email Address <span className="text-blue-400">*</span>
+                      {t("contact.emailLabel")} <span className="text-blue-400">*</span>
                     </label>
                     <input
                       type="email"
@@ -162,14 +148,14 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-400 transition-colors"
-                      placeholder="ahmed@startup.dz"
+                      placeholder={t("contact.emailPlaceholder")}
                     />
                   </div>
 
                   {/* Company */}
                   <div>
                     <label htmlFor="company" className="block text-sm font-medium text-zinc-300 mb-2">
-                      Company Name
+                      {t("contact.companyLabel")}
                     </label>
                     <input
                       type="text"
@@ -178,33 +164,34 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       value={formData.company}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-400 transition-colors"
-                      placeholder="Your Startup Inc."
+                      placeholder={t("contact.companyPlaceholder")}
                     />
                   </div>
+
+                  {/* Phone */}
                   <div>
-                      {/* Phone Number */}
-  <label htmlFor="phone" className="block text-sm font-medium text-zinc-300 mb-2">
-    Mobile Phone <span className="text-blue-400">*</span>
-  </label>
-  <div className="relative">
-    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-    <input
-      type="tel"
-      id="phone"
-      name="phone"
-      value={formData.phone}
-      onChange={handleChange}
-      required
-      className="w-full pl-11 pr-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-400 transition-colors"
-      placeholder="+213 XXX XXX XXX"
-    />
-  </div>
-</div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-zinc-300 mb-2">
+                      {t("contact.phoneLabel")} <span className="text-blue-400">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-11 pr-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-400 transition-colors"
+                        placeholder={t("contact.phonePlaceholder")}
+                      />
+                    </div>
+                  </div>
 
                   {/* Service Type */}
                   <div>
                     <label htmlFor="serviceType" className="block text-sm font-medium text-zinc-300 mb-2">
-                      Service Interest <span className="text-blue-400">*</span>
+                      {t("contact.serviceLabel")} <span className="text-blue-400">*</span>
                     </label>
                     <select
                       id="serviceType"
@@ -214,7 +201,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       required
                       className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 focus:outline-none focus:border-blue-400 transition-colors"
                     >
-                      <option value="" className="bg-[#020617]">Select a service</option>
+                      <option value="" className="bg-[#020617]">{t("contact.servicePlaceholder")}</option>
                       {serviceTypes.map((service, index) => (
                         <option key={index} value={service} className="bg-[#020617]">
                           {service}
@@ -226,7 +213,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                   {/* Message */}
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-zinc-300 mb-2">
-                      Message <span className="text-blue-400">*</span>
+                      {t("contact.messageLabel")} <span className="text-blue-400">*</span>
                     </label>
                     <textarea
                       id="message"
@@ -236,7 +223,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       required
                       rows={6}
                       className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-blue-400 transition-colors resize-none"
-                      placeholder="Tell us about your security needs and goals..."
+                      placeholder={t("contact.messagePlaceholder")}
                     />
                   </div>
 
@@ -245,11 +232,10 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                     type="submit"
                     className="w-full px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition-all hover:shadow-2xl hover:shadow-blue-500/30 flex items-center justify-center space-x-2 text-zinc-100"
                   >
-                    <span>Send Message</span>
+                    <span>{t("contact.sendBtn")}</span>
                     <Send className="w-5 h-5" />
                   </button>
 
-                  {/* Success/Error Messages */}
                   {formStatus === 'success' && (
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
@@ -257,11 +243,9 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       className="flex items-center space-x-2 p-4 rounded-lg bg-green-500/10 border border-green-500/30"
                     >
                       <CheckCircle className="w-5 h-5 text-green-400" />
-                      <span className="text-green-400">Message sent successfully! We'll be in touch soon.</span>
+                      <span className="text-green-400">{t("contact.successMsg")}</span>
                     </motion.div>
                   )}
-                  {/* Mobile Phone */}
-
 
                   {formStatus === 'error' && (
                     <motion.div
@@ -270,7 +254,7 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                       className="flex items-center space-x-2 p-4 rounded-lg bg-red-500/10 border border-red-500/30"
                     >
                       <AlertCircle className="w-5 h-5 text-red-400" />
-                      <span className="text-red-400">Something went wrong. Please try again.</span>
+                      <span className="text-red-400">{t("contact.errorMsg")}</span>
                     </motion.div>
                   )}
                 </form>
@@ -306,11 +290,6 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
                   ))}
                 </div>
               </div>
-
-             
-
-             
-             
             </motion.div>
           </div>
         </div>
@@ -320,10 +299,10 @@ details: ["Djelfa, Algeria", "Available for remote consultations"]
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent to-blue-950/10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-zinc-100">
-            Have Questions?
+            {t("contact.faqTitle")}
           </h2>
           <p className="text-xl text-zinc-300 mb-8">
-            We've compiled answers to common questions about our services, pricing, and engagement process.
+            {t("contact.faqSubtitle")}
           </p>
           <a
             href="#"

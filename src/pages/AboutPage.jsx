@@ -1,10 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Shield, 
-  Target, 
-  Users, 
-  Award, 
+import {
+  Shield,
+  Target,
+  Users,
+  Award,
   TrendingUp,
   Heart,
   Zap,
@@ -12,52 +11,55 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLang } from '../contexts/LanguageContext';
 
 const AboutPage = () => {
+  const { t } = useLang();
+
   const values = [
     {
       icon: <Heart className="w-8 h-8 text-blue-400" />,
-      title: "Startup-First Mindset",
-      description: "We understand the unique challenges of early-stage companies. Fast-paced development, limited budgets, and the need to move quickly without compromising security."
+      title: t("about.val1Title"),
+      description: t("about.val1Desc"),
     },
     {
       icon: <Zap className="w-8 h-8 text-blue-400" />,
-      title: "Practical Security",
-      description: "No theoretical reports that sit on shelves. We deliver actionable findings with clear remediation steps that your dev team can implement immediately."
+      title: t("about.val2Title"),
+      description: t("about.val2Desc"),
     },
     {
       icon: <Shield className="w-8 h-8 text-blue-400" />,
-      title: "Continuous Partnership",
-      description: "Security is not a one-time checkbox. We build long-term relationships, growing our services as your company scales from seed to Series A and beyond."
+      title: t("about.val3Title"),
+      description: t("about.val3Desc"),
     }
   ];
 
- const certifications = [
-  { name: "CPTS", description: "Certified Penetration Testing Specialist (In Training)" },
-  { name: "OSCP", description: "Offensive Security Certified Professional (In Training)" },
-  { name: "eWPTX", description: "Web Application Penetration Tester eXtreme (In Training)" },
-  { name: "eJPTv2", description: "Junior Penetration Tester v2 (In Training)" }
-];
+  const certifications = [
+    { name: "CPTS", description: "Certified Penetration Testing Specialist (In Training)" },
+    { name: "OSCP", description: "Offensive Security Certified Professional (In Training)" },
+    { name: "eWPTX", description: "Web Application Penetration Tester eXtreme (In Training)" },
+    { name: "eJPTv2", description: "Junior Penetration Tester v2 (In Training)" }
+  ];
 
   const stats = [
-    { number: "100%", label: "Client Satisfaction" },
-    { number: "24/7", label: "Security Monitoring" },
-    { number: "20+", label: "Project Development Milestones" },
-    { number: "2+", label: "Years of Experience" },
+    { number: t("about.stat1Value"), label: t("about.stat1Label") },
+    { number: t("about.stat2Value"), label: t("about.stat2Label") },
+    { number: t("about.stat3Value"), label: t("about.stat3Label") },
+    { number: t("about.stat4Value"), label: t("about.stat4Label") },
   ];
 
   const whySMEs = [
     {
-      title: "Affordability Without Compromise",
-      description: "Enterprise security shouldn't require enterprise budgets. We've designed tier-based pricing that makes professional pentesting accessible to startups, while delivering the same rigorous methodology used by Fortune 500 companies."
+      title: t("about.why1Title"),
+      description: t("about.why1Desc"),
     },
     {
-      title: "Local Expertise, Global Standards",
-      description: "As Algeria's first dedicated startup security firm, we understand the local regulatory landscape while ensuring our clients meet international compliance requirements like ISO 27001, SOC 2, and GDPR."
+      title: t("about.why2Title"),
+      description: t("about.why2Desc"),
     },
     {
-      title: "Speed and Agility",
-      description: "Traditional security firms move slowly. We operate at startup speed—delivering findings in days, not months, and integrating seamlessly into your CI/CD pipeline for continuous security validation."
+      title: t("about.why3Title"),
+      description: t("about.why3Desc"),
     }
   ];
 
@@ -66,7 +68,7 @@ const AboutPage = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
+
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center max-w-4xl mx-auto">
             <motion.div
@@ -75,7 +77,7 @@ const AboutPage = () => {
               className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6"
             >
               <Target className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400">Our Mission</span>
+              <span className="text-sm text-blue-400">{t("about.badge")}</span>
             </motion.div>
 
             <motion.h1
@@ -84,10 +86,7 @@ const AboutPage = () => {
               transition={{ delay: 0.1 }}
               className="text-5xl sm:text-6xl font-bold mb-6 leading-tight text-zinc-100"
             >
-              Securing the{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                Algerian Startup Ecosystem
-              </span>
+              {t("about.heroTitle")}
             </motion.h1>
 
             <motion.p
@@ -96,8 +95,7 @@ const AboutPage = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-zinc-300 mb-10 leading-relaxed max-w-3xl mx-auto"
             >
-              We're on a mission to democratize enterprise-grade cybersecurity, making professional 
-              penetration testing and vulnerability management accessible to every Algerian startup and SME.
+              {t("about.heroSubtitle")}
             </motion.p>
           </div>
         </div>
@@ -130,11 +128,8 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-zinc-100">
-              What Drives Us
+              {t("about.valuesTitle")}
             </h2>
-            <p className="text-xl text-zinc-300 max-w-2xl mx-auto">
-              Our core values shape every engagement and client relationship
-            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -167,22 +162,15 @@ const AboutPage = () => {
             >
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
                 <Users className="w-4 h-4 text-blue-400" />
-                <span className="text-sm text-blue-400">Developing Security Expertise</span>
+                <span className="text-sm text-blue-400">{t("about.teamTitle")}</span>
               </div>
 
               <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-zinc-100">
-  Building Security Expertise
-</h2>
-<p className="text-xl text-zinc-300 mb-6 leading-relaxed">
-  SecOps is a final year project platform developed by students passionate about 
-  cybersecurity and helping startups build secure products from day one.
-</p>
-<p className="text-zinc-300 mb-8 leading-relaxed">
-  Our team is currently training for industry-recognized certifications including CPTS 
-  (Certified Penetration Testing Specialist), OSCP (Offensive Security Certified Professional), 
-  eWPTX (eLearnSecurity Web Application Penetration Tester eXtreme), and eJPTv2 
-  (eLearnSecurity Junior Penetration Tester v2).
-</p>
+                {t("about.founderTitle")}
+              </h2>
+              <p className="text-xl text-zinc-300 mb-6 leading-relaxed">
+                {t("about.founderDesc")}
+              </p>
 
               {/* Certifications */}
               <div className="grid grid-cols-2 gap-4">
@@ -229,13 +217,12 @@ const AboutPage = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
               <TrendingUp className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400">Our Focus</span>
             </div>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-zinc-100">
-              Why We Focus on SMEs
+              {t("about.whyTitle")}
             </h2>
             <p className="text-xl text-zinc-300 max-w-2xl mx-auto">
-              Startups deserve enterprise security without enterprise overhead
+              {t("about.whySubtitle")}
             </p>
           </div>
 
@@ -266,19 +253,19 @@ const AboutPage = () => {
         <div className="max-w-4xl mx-auto">
           <div className="relative p-12 rounded-2xl backdrop-blur-sm bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-400/30 overflow-hidden">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
-            
+
             <div className="relative text-center">
               <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-zinc-100">
-                Join the SecOps Family
+                {t("about.ctaTitle")}
               </h2>
               <p className="text-xl text-zinc-300 mb-8 max-w-2xl mx-auto">
-                Partner with Algeria's most trusted security team and build a secure foundation for growth.
+                {t("about.ctaSubtitle")}
               </p>
               <Link
                 to="/contact"
                 className="inline-flex items-center space-x-2 px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition-all hover:shadow-2xl hover:shadow-blue-500/30 text-zinc-100"
               >
-                <span>Start Your Security Journey</span>
+                <span>{t("about.ctaBtn")}</span>
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
