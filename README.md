@@ -22,6 +22,7 @@
 | **Pentester 1** | pentester@gmail.com | `123456` |
 | **Pentester 2** | pentester2@gmail.com | `123456` |
 | **Pentester 3** | pentester3@gmail.com | `123456` |
+### Or instead you can create new account in 'Get started' page (will be automatically with Client role)
 
 ## 💎 Platform Advantages
 
