@@ -23,6 +23,7 @@ export const createUserDocument = async (uid, data) => {
     email: data.email,
     phone: data.phone || "",
     role: data.role || "client",
+    serviceType: data.serviceType || "starter",
     createdAt: serverTimestamp(),
   });
 };

@@ -31,6 +31,17 @@ export default {
     phone: "رقم الهاتف",
     phonePlaceholder: "+213 XXX XXX XXX",
     role: "دور الحساب",
+    serviceType: "نوع الخدمة",
+    serviceTypes: {
+      starter:    "مبتدئ",
+      growth:     "نمو",
+      enterprise: "مؤسسة",
+    },
+    serviceDescriptions: {
+      starter:    "فحص أمني أساسي لمرة واحدة — مثالي للتحقق من المشاريع المبكرة.",
+      growth:     "اختبار اختراق كامل لتطبيقات الويب مع مراجعة خبراء يدوية.",
+      enterprise: "اختبار اختراق كامل للبنية التحتية مع عمليات الفريق الأحمر.",
+    },
     confirmPassword: "تأكيد كلمة المرور",
     confirmPlaceholder: "أكّد كلمة مرورك",
     passwordPlaceholder2: "أنشئ كلمة مرور قوية",

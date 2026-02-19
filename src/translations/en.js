@@ -31,6 +31,17 @@ export default {
     phone: "Mobile Phone",
     phonePlaceholder: "+213 XXX XXX XXX",
     role: "Account Role",
+    serviceType: "Service Type",
+    serviceTypes: {
+      starter:    "Starter",
+      growth:     "Growth",
+      enterprise: "Enterprise",
+    },
+    serviceDescriptions: {
+      starter:    "One-time basic security scan — perfect for early-stage validation.",
+      growth:     "Full web application pentest with manual expert review.",
+      enterprise: "Full infrastructure pentest with advanced red team operations.",
+    },
     confirmPassword: "Confirm Password",
     confirmPlaceholder: "Confirm your password",
     passwordPlaceholder2: "Create a strong password",

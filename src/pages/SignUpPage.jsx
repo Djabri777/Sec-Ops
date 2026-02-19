@@ -8,14 +8,18 @@ import { createUserDocument } from "../services/firestoreService";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLang } from "../contexts/LanguageContext";
 
-const ROLE_PATHS = { admin: "/admin-dashboard", pentester: "/pentester-dashboard", client: "/client-dashboard" };
+const SERVICE_TYPES = [
+  { value: "starter",    labelKey: "auth.serviceTypes.starter"    },
+  { value: "growth",     labelKey: "auth.serviceTypes.growth"     },
+  { value: "enterprise", labelKey: "auth.serviceTypes.enterprise" },
+];
 
 const SignUpPage = () => {
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const { t } = useLang();
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", password: "", confirmPassword: "", role: "client",
+    name: "", email: "", phone: "", password: "", confirmPassword: "", serviceType: "starter",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,9 +31,6 @@ const SignUpPage = () => {
   const inputBg = isDark
     ? "bg-white/5 border-white/10 text-zinc-100 placeholder-zinc-500 focus:border-blue-400"
     : "bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500";
-  const selectBg = isDark
-    ? "bg-slate-900 border-white/10 text-zinc-100 focus:border-blue-400"
-    : "bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500";
   const iconColor = isDark ? "text-zinc-500" : "text-slate-400";
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,9 +53,10 @@ const SignUpPage = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        role: formData.role,
+        role: "client",
+        serviceType: formData.serviceType,
       });
-      navigate(ROLE_PATHS[formData.role] || "/", { replace: true });
+      navigate("/client-dashboard", { replace: true });
     } catch (err) {
       setError(getErrorMsg(err.code, t));
     } finally {
@@ -120,15 +122,31 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Role */}
+            {/* Service Type */}
             <div>
-              <label htmlFor="role" className={`block text-sm font-medium ${label} mb-2`}>{t("auth.role")}</label>
-              <select id="role" name="role" value={formData.role} onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-xl border ${selectBg} focus:outline-none transition-colors`}>
-                <option value="client">{t("auth.roles.client")}</option>
-                <option value="pentester">{t("auth.roles.pentester")}</option>
-                <option value="admin">{t("auth.roles.admin")}</option>
-              </select>
+              <label className={`block text-sm font-medium ${label} mb-2`}>{t("auth.serviceType")}</label>
+              <div className="grid grid-cols-3 gap-2">
+                {SERVICE_TYPES.map(({ value, labelKey }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, serviceType: value })}
+                    className={`relative px-3 py-3 rounded-xl border text-sm font-medium transition-all ${
+                      formData.serviceType === value
+                        ? "bg-blue-500/20 border-blue-400/60 text-blue-400 shadow-sm shadow-blue-500/20"
+                        : isDark
+                          ? "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:border-white/20"
+                          : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:border-slate-300"
+                    }`}
+                  >
+                    {formData.serviceType === value && (
+                      <span className="absolute top-1.5 end-1.5 w-1.5 h-1.5 rounded-full bg-blue-400" />
+                    )}
+                    {t(labelKey)}
+                  </button>
+                ))}
+              </div>
+              <p className={`mt-1.5 text-xs ${muted}`}>{t(`auth.serviceDescriptions.${formData.serviceType}`)}</p>
             </div>
 
             {/* Password */}
