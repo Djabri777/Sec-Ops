@@ -23,32 +23,46 @@
 | **Pentester 2** | pentester2@gmail.com | `123456` |
 | **Pentester 3** | pentester3@gmail.com | `123456` |
 
-## 🚀 Key Features
-* **Production Ready**: Optimized routing using `basename="/Sec-Ops-version-1"` for seamless GitHub Pages deployment.
+## 💎 Platform Advantages
 
-## 📂 Project Pages
-The application currently includes the following dedicated pages:
+* **Centralized Visibility:** Consolidates security logs into a single, intuitive dashboard.
+* **Enhanced Collaboration:** Seamless reporting between Pentesters and Clients.
+* **Data-Driven Insights:** Uses **Recharts** to visualize attack trends and system health.
+* **Lightning Performance:** Built on **Vite** for optimized build times and instant HMR.
+* **Mobile Ready:** Responsive design for security monitoring on the go.
 
-### **Main Navigation**
-* **Home Page**: High-impact hero section for startups and SMEs.
-* **Services Page**: Detailed breakdown of pentesting and audit offerings.
-* **About Page**: Information on the team, mission, and academic context.
-* **Contact Page**: Localized contact portal for Djelfa, Algeria.
+## 🛠️ Installation & Deployment
 
-### **Authentication System**
-* **Sign In Page**: Secure login portal for existing users.
-* **Sign Up Page**: Registration gateway for new clients.
-* **Forgot Password**: Recovery flow for lost credentials.
-* **Reset Password**: Secure update portal for account credentials.
+To get this project running locally or deploy it to your own GitHub Pages, run the following commands in your terminal:
 
-### **System & Error Pages**
-* **404 Not Found**: Custom "Page Not Found" with cybersecurity-themed UI.
-* **500 Server Error**: Professional error handling for internal system issues.
+```
+bash
+# 1. Clone the repository
+git clone [https://github.com/Djabri777/Sec-Ops-version-1.git](https://github.com/Djabri777/Sec-Ops-version-1.git)
+
+# 2. Enter the project directory
+cd Sec-Ops-version-1
+
+# 3. Install all dependencies (React, Recharts, Tailwind, etc.)
+npm install
+
+# 4. Start the local development server
+npm run dev
+
+# 5. Build and Deploy to GitHub Pages
+# (Ensure your vite.config.js base path is set correctly first!)
+npm run deploy
+```
 
 ## 🛠️ Technical Stack
-* **Frontend**: React.js (Vite).
-* **Styling**: Tailwind CSS.
-* **Routing**: React Router DOM (v6) with production `basename` configuration.
+- **Core:** React 18 (Hooks & Context API)
+- **Build Tool:** Vite (Production-optimized bundling)
+- **Styling:** Tailwind CSS (Utility-first CSS)
+- **Routing:** React Router DOM (Client-side navigation)
+- **Data Visualization:** Recharts (SVG-based charting)
+- **Icons:** Lucide-React / FontAwesome
+- **Animations:** Framer Motion (Smooth UI transitions)
+- **Deployment:** GitHub Pages (CI/CD via gh-pages)
 
 ## 🎓 Academic Context
 This platform is an official graduation project. The team is currently specializing in the **Hack The Box Certified Penetration Testing Specialist (CPTS)** path to align all audits with global industry standards.
