@@ -1,58 +1,82 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ============================================ */
+/* ملف الأنماط الأساسي - Tailwind CSS          */
+/* ============================================ */
+/* هذا الملف يستورد أنماط Tailwind الأساسية    */
+/* ويحدد بعض الأنماط العامة للتطبيق            */
 
+/* استيراد الطبقات الثلاث الأساسية لـ Tailwind */
+@tailwind base;        /* الأنماط الأساسية (إعادة تعيين المتصفح) */
+@tailwind components;  /* أنماط المكونات الجاهزة */
+@tailwind utilities;   /* أصناف الأدوات المساعدة (مثل p-4, text-center, الخ) */
+
+/* ============ الأنماط الأساسية ============ */
 @layer base {
+  /* تمرير سلس عند النقر على الروابط الداخلية */
   html {
     scroll-behavior: smooth;
   }
 
+  /* أنماط الجسم الافتراضية - الوضع الداكن */
+  /* خلفية داكنة جداً مع نص أبيض فاتح */
   body {
     @apply bg-[#020617] text-zinc-100;
+    /* انتقال سلس عند تغيير الألوان (مثلاً عند التبديل بين الوضع الداكن والفاتح) */
     transition: background-color 0.3s, color 0.3s;
   }
 
+  /* أنماط الوضع الفاتح - تُطبق عندما لا يكون صنف 'dark' موجوداً */
   html:not(.dark) body {
-    @apply bg-slate-50 text-slate-900;
+    @apply bg-slate-50 text-slate-900; /* خلفية فاتحة مع نص داكن */
   }
 
-  /* Arabic font stack */
+  /* إعدادات الخط العربي */
+  /* عندما يكون اتجاه الصفحة من اليمين لليسار (RTL) */
   [dir="rtl"] {
     font-family: 'Cairo', 'Segoe UI', 'Noto Sans Arabic', system-ui, sans-serif;
-    letter-spacing: 0;
+    letter-spacing: 0; /* إزالة التباعد بين الحروف للعربية */
   }
 }
 
+/* ============ أدوات مساعدة إضافية ============ */
 @layer utilities {
+  /* توازن النص - يوزع النص بشكل متساوي على الأسطر */
   .text-balance {
     text-wrap: balance;
   }
 }
 
-/* ─── Light-mode colour overrides for legacy components ─────────────────── */
-/* These fix hardcoded zinc-* classes that were designed for dark backgrounds */
+/* ============================================ */
+/* تعديلات ألوان الوضع الفاتح للمكونات القديمة */
+/* ============================================ */
+/* هذه التعديلات تصلح الأصناف التي صُممت للخلفيات الداكنة */
+/* حتى تظهر بشكل صحيح في الوضع الفاتح */
 
-html:not(.dark) .text-zinc-100 { color: rgb(15 23 42); }
+/* تحويل ألوان النص الفاتحة إلى داكنة في الوضع الفاتح */
+html:not(.dark) .text-zinc-100 { color: rgb(15 23 42); }   /* أبيض ← أسود تقريباً */
 html:not(.dark) .text-zinc-200 { color: rgb(30 41 59); }
 html:not(.dark) .text-zinc-300 { color: rgb(51 65 85); }
 html:not(.dark) .text-zinc-400 { color: rgb(71 85 105); }
 html:not(.dark) .text-zinc-500 { color: rgb(100 116 139); }
 
+/* تحويل لون النص المؤقت (placeholder) في الحقول */
 html:not(.dark) .placeholder-zinc-500::placeholder { color: rgb(148 163 184); }
 
-html:not(.dark) .bg-white\/5  { background-color: rgb(241 245 249); }
+/* تحويل الخلفيات الشفافة إلى ألوان فاتحة مرئية */
+html:not(.dark) .bg-white\/5  { background-color: rgb(241 245 249); }  /* شفاف ← رمادي فاتح */
 html:not(.dark) .bg-white\/10 { background-color: rgb(226 232 240); }
 html:not(.dark) .bg-white\/15 { background-color: rgb(203 213 225); }
 
+/* تحويل حدود شفافة إلى حدود مرئية في الوضع الفاتح */
 html:not(.dark) .border-white\/5  { border-color: rgb(241 245 249); }
 html:not(.dark) .border-white\/10 { border-color: rgb(203 213 225); }
 html:not(.dark) .border-white\/15 { border-color: rgb(148 163 184); }
 
+/* تحويل الفواصل بين العناصر */
 html:not(.dark) .divide-white\/5 > * + *  { border-color: rgb(241 245 249); }
 html:not(.dark) .divide-white\/10 > * + * { border-color: rgb(203 213 225); }
 
-/* Dark background pages → white in light mode */
+/* تحويل الخلفية الداكنة الرئيسية إلى فاتحة */
 html:not(.dark) .bg-\[#020617\] { background-color: rgb(248 250 252); }
 
-/* Glass cards */
+/* بطاقات الزجاج - تحويل الشفافية إلى خلفية بيضاء */
 html:not(.dark) .backdrop-blur-sm { background-color: rgba(255,255,255,0.85); }
