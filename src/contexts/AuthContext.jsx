@@ -13,8 +13,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 // استيراد كائن المصادقة من إعدادات Firebase
 import { auth } from "../firebase";
-// استيراد دالة جلب بيانات المستخدم من قاعدة البيانات
-import { getUserDocument } from "../services/firestoreService";
+// استيراد دوال جلب وإنشاء بيانات المستخدم من قاعدة البيانات
+import { getUserDocument, createUserDocument } from "../services/firestoreService";
 
 // إنشاء السياق - هذا هو "الصندوق" الذي سيحتوي على بيانات المصادقة
 const AuthContext = createContext(null);
@@ -36,10 +36,24 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // المستخدم مسجل دخوله ← جلب بياناته من قاعدة البيانات
-        const profile = await getUserDocument(user.uid);
+        let profile = await getUserDocument(user.uid);
+
+        // إذا لم يكن لديه مستند في Firestore، إنشاء واحد افتراضي
+        if (!profile) {
+          const defaultData = {
+            name: user.displayName || user.email?.split('@')[0] || "User",
+            email: user.email,
+            phone: "",
+            role: "client",  // الدور الافتراضي
+            serviceType: "starter"
+          };
+          await createUserDocument(user.uid, defaultData);
+          profile = await getUserDocument(user.uid);
+        }
+
         setCurrentUser(user);                    // حفظ كائن المستخدم
         setUserProfile(profile);                 // حفظ بيانات الملف الشخصي
-        setUserRole(profile?.role || null);       // حفظ الدور (admin/pentester/client)
+        setUserRole(profile?.role || "client");   // حفظ الدور (admin/pentester/client)
       } else {
         // المستخدم غير مسجل ← مسح جميع البيانات
         setCurrentUser(null);

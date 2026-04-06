@@ -64,6 +64,13 @@ const SignInPage = () => {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
       // نجاح ← ننتظر AuthContext ليحل الدور ثم useEffect سيتولى التوجيه
       setPendingRedirect(true);
+      // مهلة للتوجيه - إذا لم يحدث خلال 5 ثوانٍ، إعادة المحاولة
+      setTimeout(() => {
+        if (!userRole && currentUser) {
+          // إذا كان المستخدم مسجل دخول لكن بدون دور، أعد المحاولة أو وجه للصفحة الرئيسية
+          navigate("/", { replace: true });
+        }
+      }, 5000);
     } catch (err) {
       // فشل ← عرض رسالة الخطأ المناسبة
       setError(getErrorMsg(err.code, t));
