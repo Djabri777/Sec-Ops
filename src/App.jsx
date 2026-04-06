@@ -7,10 +7,10 @@
 // 3. حماية بعض المسارات حسب دور المستخدم (admin, pentester, client)
 
 // ============ استيراد مكتبات التوجيه ============
-// BrowserRouter: يدير التنقل بين الصفحات باستخدام عناوين URL
+// HashRouter: يدير التنقل بين الصفحات باستخدام Hash (#) - يعمل بشكل مثالي مع GitHub Pages
 // Routes: يحتوي على جميع المسارات
 // Route: يعرّف مسار واحد (رابط + صفحة)
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 
 // ============ استيراد موفري السياق (Context Providers) ============
 // هؤلاء يوفرون بيانات مشتركة لجميع المكونات في التطبيق
