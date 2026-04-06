@@ -49,8 +49,8 @@ function App() {
     <ThemeProvider>
       {/* LanguageProvider: يوفر وظيفة تبديل اللغة (عربي/إنجليزي) */}
       <LanguageProvider>
-        {/* Router: يدير التنقل - basename هو المسار الأساسي على GitHub Pages */}
-        <Router basename="/Sec-Ops-version-1">
+        {/* Router: يدير التنقل - Vite's base في vite.config.js يتعامل مع المسار */}
+        <Router>
           {/* AuthProvider: يوفر معلومات المستخدم الحالي لجميع المكونات */}
           <AuthProvider>
             {/* Routes: يحتوي على جميع تعريفات المسارات */}
