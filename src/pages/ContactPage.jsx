@@ -55,10 +55,10 @@ const ContactPage = () => {
 
     try {
       await emailjs.send(
-        'YOUR_SERVICE_ID',
-        'YOUR_TEMPLATE_ID',
+        'service_0I812po',
+        'template_v5ke184',
         templateParams,
-        'YOUR_PUBLIC_KEY'
+        'xKK4nFGaKxxvvs2rr'
       );
 
       setFormStatus('success');
