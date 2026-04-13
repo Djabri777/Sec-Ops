@@ -61,6 +61,17 @@ const ContactPage = () => {
         'xKK4nFGaKxxvvs2rr'
       );
 
+      try {
+        await emailjs.send(
+          'service_0I812po',
+          'YOUR_AUTO_REPLY_TEMPLATE_ID',
+          templateParams,
+          'xKK4nFGaKxxvvs2rr'
+        );
+      } catch (autoReplyError) {
+        console.warn('Auto-reply email failed (template may not be configured):', autoReplyError);
+      }
+
       setFormStatus('success');
       setTimeout(() => {
         setFormData({ name: '', email: '', company: '', phone: '', serviceType: '', message: '' });
