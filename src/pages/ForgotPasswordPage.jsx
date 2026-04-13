@@ -1,46 +1,35 @@
-// ============================================
-// صفحة نسيت كلمة المرور (Forgot Password Page)
-// ============================================
-// هذه الصفحة تسمح للمستخدم بطلب رابط إعادة تعيين كلمة المرور
-// الخطوات:
-// 1. المستخدم يدخل بريده الإلكتروني
-// 2. يتم إرسال رابط إعادة التعيين للبريد
-// 3. تظهر رسالة تأكيد
-// ملاحظة: حالياً النموذج يطبع في Console فقط (بحاجة لربطه بـ Firebase)
 
-// ============ الاستيرادات ============
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowRight, Shield, ArrowLeft } from 'lucide-react'; // أيقونات
-import { motion } from 'framer-motion'; // حركات
+import { Mail, ArrowRight, Shield, ArrowLeft } from 'lucide-react'; 
+import { motion } from 'framer-motion'; 
 
-// ============ المكون الرئيسي ============
 const ForgotPasswordPage = () => {
-  // ===== متغيرات الحالة =====
-  const [email, setEmail] = useState('');        // البريد الإلكتروني المدخل
-  const [submitted, setSubmitted] = useState(false); // هل تم الإرسال؟ (لإظهار رسالة التأكيد)
+  
+  const [email, setEmail] = useState('');        
+  const [submitted, setSubmitted] = useState(false); 
 
-  // ===== معالج إرسال النموذج =====
   const handleSubmit = (e) => {
-    e.preventDefault(); // منع إعادة تحميل الصفحة
-    console.log('Password reset requested for:', email); // طباعة في Console (مؤقت)
-    setSubmitted(true); // إظهار رسالة التأكيد
+    e.preventDefault(); 
+    console.log('Password reset requested for:', email); 
+    setSubmitted(true); 
   };
 
   return (
-    // ===== الحاوية الرئيسية - وسط الشاشة =====
+    
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-      {/* خلفية ضبابية زرقاء للتزيين */}
+      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      {/* البطاقة مع حركة ظهور */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="max-w-md w-full relative z-10"
       >
-        {/* ── الشعار ── */}
+        {}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 group">
             <Shield className="w-10 h-10 text-blue-400" strokeWidth={2} />
@@ -48,14 +37,14 @@ const ForgotPasswordPage = () => {
           </Link>
         </div>
 
-        {/* ── بطاقة النموذج ── */}
+        {}
         <div className="p-8 rounded-2xl backdrop-blur-sm bg-white/5 border border-white/10">
 
-          {/* ===== عرض مختلف حسب حالة الإرسال ===== */}
+          {}
           {!submitted ? (
-            // ── الحالة 1: لم يتم الإرسال بعد ← عرض النموذج ──
+            
             <>
-              {/* عنوان ووصف */}
+              {}
               <div className="mb-8">
                 <h1 className="text-3xl font-bold text-zinc-100 mb-2">Forgot Password?</h1>
                 <p className="text-zinc-400">
@@ -107,7 +96,7 @@ const ForgotPasswordPage = () => {
               <p className="text-zinc-400 mb-6">
                 We've sent a password reset link to <strong className="text-zinc-100">{email}</strong>
               </p>
-              {/* رابط إعادة المحاولة */}
+              {}
               <p className="text-sm text-zinc-500 mb-8">
                 Didn't receive the email? Check your spam folder or{' '}
                 <button

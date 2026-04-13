@@ -1,37 +1,26 @@
-// ============================================
-// صفحة 404 - الصفحة غير موجودة (Not Found Page)
-// ============================================
-// تظهر هذه الصفحة عندما يحاول المستخدم الوصول لرابط غير موجود
-// مثال: إذا كتب في المتصفح /xyz ← يظهر خطأ 404
-// تحتوي على:
-// 1. رقم 404 كبير بتدرج لوني
-// 2. رسالة توضيحية
-// 3. أزرار للعودة للرئيسية أو التواصل مع الدعم
-// 4. روابط مفيدة
 
-// ============ الاستيرادات ============
+
 import React from 'react';
-import { Link } from 'react-router-dom';             // للتنقل بين الصفحات
-import { Home, Search, Shield } from 'lucide-react'; // أيقونات
-import { motion } from 'framer-motion';               // حركات انتقالية
+import { Link } from 'react-router-dom';             
+import { Home, Search, Shield } from 'lucide-react'; 
+import { motion } from 'framer-motion';               
 
-// ============ المكون الرئيسي ============
 const NotFoundPage = () => {
   return (
-    // ===== الحاوية الرئيسية - وسط الشاشة =====
+    
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-      {/* خلفية ضبابية زرقاء للتزيين */}
+      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      {/* المحتوى الرئيسي مع حركة ظهور */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="max-w-2xl w-full text-center relative z-10"
       >
-        {/* ── رقم 404 المتحرك ── */}
-        {/* يظهر بحجم كبير جداً مع تدرج لوني أزرق-بنفسجي */}
+        {}
+        {}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -39,16 +28,16 @@ const NotFoundPage = () => {
           className="mb-8"
         >
           <div className="relative inline-block">
-            {/* الرقم 404 بتدرج لوني شفاف */}
+            {}
             <h1 className="text-[150px] sm:text-[200px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 leading-none">
               404
             </h1>
-            {/* توهج ضبابي خلف الرقم */}
+            {}
             <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-blue-400/30 to-purple-500/30"></div>
           </div>
         </motion.div>
 
-        {/* ── رسالة الخطأ ── */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

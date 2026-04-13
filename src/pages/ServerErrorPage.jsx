@@ -1,31 +1,20 @@
-// ============================================
-// صفحة 500 - خطأ في الخادم (Server Error Page)
-// ============================================
-// تظهر هذه الصفحة عندما يحدث خطأ داخلي في الخادم
-// تحتوي على:
-// 1. رقم 500 كبير بتدرج أحمر-برتقالي
-// 2. رسالة توضيحية
-// 3. نصائح لحل المشكلة
-// 4. أزرار لتحديث الصفحة أو العودة للرئيسية
-// 5. رابط للتواصل مع فريق الدعم
 
-// ============ الاستيرادات ============
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, RefreshCw, Shield, AlertTriangle } from 'lucide-react'; // أيقونات
-import { motion } from 'framer-motion'; // حركات
+import { Home, RefreshCw, Shield, AlertTriangle } from 'lucide-react'; 
+import { motion } from 'framer-motion'; 
 
-// ============ المكون الرئيسي ============
 const ServerErrorPage = () => {
-  // دالة تحديث الصفحة - تعيد تحميل الصفحة بالكامل
+  
   const handleRefresh = () => {
     window.location.reload();
   };
 
   return (
-    // ===== الحاوية الرئيسية - وسط الشاشة =====
+    
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-      {/* خلفية ضبابية حمراء للتزيين (لون أحمر لأنه خطأ) */}
+      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <motion.div
@@ -34,8 +23,8 @@ const ServerErrorPage = () => {
         transition={{ duration: 0.4 }}
         className="max-w-2xl w-full text-center relative z-10"
       >
-        {/* ── رقم 500 المتحرك ── */}
-        {/* بتدرج أحمر-برتقالي */}
+        {}
+        {}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -46,12 +35,12 @@ const ServerErrorPage = () => {
             <h1 className="text-[150px] sm:text-[200px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-500 leading-none">
               500
             </h1>
-            {/* توهج ضبابي أحمر */}
+            {}
             <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-red-400/30 to-orange-500/30"></div>
           </div>
         </motion.div>
 
-        {/* ── رسالة الخطأ ── */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

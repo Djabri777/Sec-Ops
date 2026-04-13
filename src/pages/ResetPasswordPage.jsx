@@ -1,72 +1,56 @@
-// ============================================
-// صفحة إعادة تعيين كلمة المرور (Reset Password Page)
-// ============================================
-// هذه الصفحة تسمح للمستخدم بإدخال كلمة مرور جديدة
-// بعد النقر على رابط إعادة التعيين المرسل لبريده
-// الخطوات:
-// 1. إدخال كلمة المرور الجديدة وتأكيدها
-// 2. التحقق من تطابقهما
-// 3. عرض رسالة نجاح ثم التوجيه لتسجيل الدخول
-// ملاحظة: حالياً النموذج يطبع في Console فقط (بحاجة لربطه بـ Firebase)
 
-// ============ الاستيرادات ============
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, ArrowRight, Shield, Check } from 'lucide-react'; // أيقونات
-import { motion } from 'framer-motion'; // حركات
+import { Lock, ArrowRight, Shield, Check } from 'lucide-react'; 
+import { motion } from 'framer-motion'; 
 
-// ============ المكون الرئيسي ============
 const ResetPasswordPage = () => {
-  const navigate = useNavigate(); // للتنقل البرمجي
+  const navigate = useNavigate(); 
 
-  // ===== متغيرات الحالة =====
   const [formData, setFormData] = useState({
-    password: '',         // كلمة المرور الجديدة
-    confirmPassword: ''   // تأكيد كلمة المرور
+    password: '',         
+    confirmPassword: ''   
   });
-  const [success, setSuccess] = useState(false); // هل تمت إعادة التعيين بنجاح؟
+  const [success, setSuccess] = useState(false); 
 
-  // ===== معالج تغيير الحقول =====
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value // تحديث الحقل المتغير فقط
+      [e.target.name]: e.target.value 
     });
   };
 
-  // ===== معالج إرسال النموذج =====
   const handleSubmit = (e) => {
-    e.preventDefault(); // منع إعادة تحميل الصفحة
+    e.preventDefault(); 
 
-    // التحقق: هل كلمتا المرور متطابقتان؟
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
 
-    console.log('Password reset:', formData); // طباعة في Console (مؤقت)
-    setSuccess(true); // إظهار رسالة النجاح
+    console.log('Password reset:', formData); 
+    setSuccess(true); 
 
-    // بعد ثانيتين، التوجيه تلقائياً لصفحة تسجيل الدخول
     setTimeout(() => {
       navigate('/signin');
     }, 2000);
   };
 
   return (
-    // ===== الحاوية الرئيسية - وسط الشاشة =====
+    
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-      {/* خلفية ضبابية زرقاء */}
+      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      {/* البطاقة مع حركة ظهور */}
+      {}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="max-w-md w-full relative z-10"
       >
-        {/* ── الشعار ── */}
+        {}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 group">
             <Shield className="w-10 h-10 text-blue-400" strokeWidth={2} />
@@ -74,14 +58,14 @@ const ResetPasswordPage = () => {
           </Link>
         </div>
 
-        {/* ── بطاقة النموذج ── */}
+        {}
         <div className="p-8 rounded-2xl backdrop-blur-sm bg-white/5 border border-white/10">
 
-          {/* ===== عرض مختلف حسب حالة النجاح ===== */}
+          {}
           {!success ? (
-            // ── الحالة 1: لم يتم بعد ← عرض نموذج كلمة المرور الجديدة ──
+            
             <>
-              {/* عنوان ووصف */}
+              {}
               <div className="mb-8">
                 <h1 className="text-3xl font-bold text-zinc-100 mb-2">Reset Password</h1>
                 <p className="text-zinc-400">
