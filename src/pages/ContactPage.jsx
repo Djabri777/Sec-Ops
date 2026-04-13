@@ -64,7 +64,7 @@ const ContactPage = () => {
       try {
         await emailjs.send(
           'service_0I812po',
-          'YOUR_AUTO_REPLY_TEMPLATE_ID',
+          'template_wtiowji',
           templateParams,
           'xKK4nFGaKxxvvs2rr'
         );
