@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import emailjs from 'emailjs-com';
 import {
   Mail,
@@ -13,6 +13,10 @@ import { useLang } from '../contexts/LanguageContext';
 
 const ContactPage = () => {
   const { t } = useLang();
+
+  useEffect(() => {
+    emailjs.init('xKK4nFGaKxxvvs2rr');
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -53,9 +57,18 @@ const ContactPage = () => {
       to_email: 'gabiselt777@gmail.com'
     };
 
+    const autoReplyParams = {
+      from_name: formData.name,
+      from_email: formData.email,
+      company: formData.company || 'N/A',
+      phone: formData.phone,
+      service_type: formData.serviceType,
+      message: formData.message
+    };
+
     try {
       await emailjs.send(
-        'service_0I812po',
+        'service_0l812po',
         'template_v5ke184',
         templateParams,
         'xKK4nFGaKxxvvs2rr'
@@ -63,13 +76,13 @@ const ContactPage = () => {
 
       try {
         await emailjs.send(
-          'service_0I812po',
-          'template_wtiowji',
-          templateParams,
+          'service_0l812po',
+          'template_wtlowji',
+          autoReplyParams,
           'xKK4nFGaKxxvvs2rr'
         );
       } catch (autoReplyError) {
-        console.warn('Auto-reply email failed (template may not be configured):', autoReplyError);
+        console.error('Auto-reply failed. Please contact support.');
       }
 
       setFormStatus('success');
@@ -78,7 +91,7 @@ const ContactPage = () => {
         setFormStatus(null);
       }, 3000);
     } catch (error) {
-      console.error('Email send error:', error);
+      console.error('Failed to send message. Please try again.');
       setFormStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -308,7 +321,7 @@ const ContactPage = () => {
                 </h3>
 
                 <div className="space-y-6">
-                  {contactInfo.map((info, index) => (
+                  {contactInfo.map((info, index) => (  
                     <div key={index} className="flex items-start space-x-4">
                       <div className="p-3 rounded-lg bg-blue-500/10">
                         {info.icon}
