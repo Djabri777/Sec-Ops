@@ -207,14 +207,6 @@ const ServicesPage = () => {
                     </div>
                   </div>
 
-                  {}
-                  <Link
-                    to="/contact"
-                    className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors group"
-                  >
-                    <span>{t("services.ctaBtn")}</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
                 </div>
               </motion.div>
             ))}
