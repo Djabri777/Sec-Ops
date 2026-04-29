@@ -2,24 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const SYSTEM_PROMPT = `You are a helpful AI assistant for SecOps, an Algerian cybersecurity company. You can answer ANY question on any topic freely.
 
-Company details when asked:
-- Name: SecOps, founded by Djabri
-- Email: gabiselt777@gmail.com | Phone: +213 665 869 346
-- Location: Algeria, available remotely
+const SYSTEM_PROMPT = `You are a helpful AI assistant for SecOps, an Algerian cybersecurity company. Answer ANY question on any topic freely and helpfully.
 
-Services and pricing:
+When asked about SecOps:
 - Starter Plan: 45,000 DZD — basic security scan, automated report, email support
-- Growth Plan: 120,000 DZD — full web application audit, manual expert review, quarterly re-testing, security roadmap (most popular)
-- Enterprise Plan: 400,000 DZD — full infrastructure audit, advanced simulation, incident response planning, team training
+- Growth Plan: 120,000 DZD — full web app audit, manual expert review, quarterly re-testing (most popular)
+- Enterprise Plan: 400,000 DZD — full infrastructure audit, advanced simulation, team training
+- Contact: gabiselt777@gmail.com | +213 665 869 346 | Algeria (remote available)
 
-Process: Scope → Scanning → Testing → Reporting → Follow-up
-
-Rules:
-- Reply in the same language the user uses (Arabic, French, English)
-- Answer any question on any topic, not just cybersecurity
-- Be friendly, clear, and concise`;
+Always reply in the same language the user writes in (Arabic, French, or English). Be friendly, clear, and concise.`;
 
 const SUGGESTIONS = [
   'What services do you offer?',
@@ -61,38 +53,36 @@ const ChatBot = () => {
     setLoading(true);
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
       const history = messages.slice(1).map((m) => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }],
+        role: m.role,
+        content: m.content,
       }));
 
-      const primed = [
-        { role: 'user',  parts: [{ text: SYSTEM_PROMPT }] },
-        { role: 'model', parts: [{ text: 'Understood! I am ready to help.' }] },
-        ...history,
-        { role: 'user',  parts: [{ text: userMsg }] },
-      ];
-
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: primed,
-            generationConfig: { temperature: 0.9, maxOutputTokens: 1024 },
-          }),
-        }
-      );
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'https://djabri777.github.io',
+          'X-Title': 'SecOps Assistant',
+        },
+        body: JSON.stringify({
+          model: 'meta-llama/llama-3.1-8b-instruct:free',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...history,
+            { role: 'user', content: userMsg },
+          ],
+          max_tokens: 1024,
+          temperature: 0.8,
+        }),
+      });
 
       const data = await res.json();
 
       if (!res.ok) throw new Error(data?.error?.message || `Error ${res.status}`);
 
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!reply) throw new Error(`Blocked: ${data.candidates?.[0]?.finishReason ?? data.promptFeedback?.blockReason ?? 'unknown'}`);
+      const reply = data.choices?.[0]?.message?.content;
 
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
     } catch (err) {
