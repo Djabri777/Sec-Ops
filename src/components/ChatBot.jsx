@@ -68,14 +68,20 @@ const ChatBot = () => {
         parts: [{ text: m.content }],
       }));
 
+      const primed = [
+        { role: 'user',  parts: [{ text: SYSTEM_PROMPT }] },
+        { role: 'model', parts: [{ text: 'Understood! I am ready to help.' }] },
+        ...history,
+        { role: 'user',  parts: [{ text: userMsg }] },
+      ];
+
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents: [...history, { role: 'user', parts: [{ text: userMsg }] }],
+            contents: primed,
             generationConfig: { temperature: 0.9, maxOutputTokens: 1024 },
           }),
         }
