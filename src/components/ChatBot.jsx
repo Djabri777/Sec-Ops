@@ -67,7 +67,7 @@ const ChatBot = () => {
           'X-Title': 'SecOps Assistant',
         },
         body: JSON.stringify({
-          model: 'meta-llama/llama-3.1-8b-instruct:free',
+          model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             ...history,
