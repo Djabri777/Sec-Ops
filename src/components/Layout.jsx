@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import ChatBot from './ChatBot';
 
 import { Shield, Lock, Menu, X, Moon, Sun, Languages, LogOut } from 'lucide-react';
 
@@ -203,6 +204,8 @@ const Layout = () => {
           <Outlet />
         </motion.main>
       </AnimatePresence>
+
+      <ChatBot />
 
       {}
       <footer className={`py-12 px-4 sm:px-6 lg:px-8 border-t ${isDark ? 'border-white/10 bg-[#020617]' : 'border-slate-200 bg-white'}`}>
