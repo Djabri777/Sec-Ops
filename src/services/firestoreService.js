@@ -15,7 +15,8 @@ import {
   serverTimestamp,  
 } from "firebase/firestore";
 
-import { db } from "../firebase";
+import { db, secondaryAuth } from "../firebase";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 
 export const createUserDocument = async (uid, data) => {
   await setDoc(doc(db, "users", uid), {
@@ -119,6 +120,14 @@ export const markAuditCompleted = async (auditId) => {
 
 export const deleteAudit = async (auditId) => {
   await deleteDoc(doc(db, "audits", auditId));
+};
+
+export const adminCreateUser = async ({ name, email, password, role, phone, serviceType }) => {
+  const cred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+  const uid = cred.user.uid;
+  await signOut(secondaryAuth);
+  await createUserDocument(uid, { name, email, phone, role, serviceType });
+  return uid;
 };
 
 export const submitVulnerability = async (auditId, pentesterId, formData) => {

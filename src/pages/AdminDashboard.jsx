@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import {
   Shield, Users, ClipboardList, LogOut, Clock,
-  UserCheck, BarChart2, RefreshCw, AlertTriangle, Moon, Sun, Languages, Bug, UserCog, Trash2,
+  UserCheck, BarChart2, RefreshCw, AlertTriangle, Moon, Sun, Languages, Bug, UserCog, Trash2, UserPlus, X, Eye, EyeOff,
 } from "lucide-react";
 
 import {
@@ -20,7 +20,7 @@ import { useTheme } from "../contexts/ThemeContext";
 
 import { useLang } from "../contexts/LanguageContext";
 
-import { getAllAudits, getAllPentesters, assignAudit, getAllUsers, deleteAudit } from "../services/firestoreService";
+import { getAllAudits, getAllPentesters, assignAudit, getAllUsers, deleteAudit, adminCreateUser } from "../services/firestoreService";
 
 const PIE_COLORS = ["#facc15", "#3b82f6", "#a855f7", "#22c55e"];
 
@@ -66,8 +66,14 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   
   const [confirmDelete, setConfirmDelete] = useState(null);
-  
+
   const [deleting, setDeleting] = useState(null);
+
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [addUserForm, setAddUserForm] = useState({ name: "", email: "", password: "", role: "client", phone: "", serviceType: "starter" });
+  const [addUserLoading, setAddUserLoading] = useState(false);
+  const [addUserError, setAddUserError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const bg        = isDark ? "bg-[#060b17]"   : "bg-slate-100";
   
@@ -126,6 +132,22 @@ const AdminDashboard = () => {
     await fetchData();
     setAssigning(null);
     setSelectedPentester((prev) => { const n = { ...prev }; delete n[auditId]; return n; });
+  };
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    setAddUserLoading(true);
+    setAddUserError("");
+    try {
+      await adminCreateUser(addUserForm);
+      await fetchData();
+      setShowAddUser(false);
+      setAddUserForm({ name: "", email: "", password: "", role: "client", phone: "", serviceType: "starter" });
+    } catch (err) {
+      setAddUserError(err.message);
+    } finally {
+      setAddUserLoading(false);
+    }
   };
 
   const statusCounts = ["pending", "assigned", "in_progress", "completed"].map((s) => ({
@@ -475,11 +497,99 @@ const AdminDashboard = () => {
           {}
           {activeTab === "users" && (
             <div className="space-y-6">
-              {}
               <div className="flex items-center justify-between">
                 <h2 className={`text-lg font-bold ${text}`}>{t("dash.allUsers")}</h2>
-                <span className={`text-sm ${muted}`}>{users.length} {t("dash.total")}</span>
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm ${muted}`}>{users.length} {t("dash.total")}</span>
+                  <button
+                    onClick={() => { setShowAddUser(true); setAddUserError(""); }}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-blue-500/20 transition-all"
+                  >
+                    <UserPlus className="w-4 h-4" /> Add User
+                  </button>
+                </div>
               </div>
+
+              {/* Add User Modal */}
+              {showAddUser && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                  <div className={`w-full max-w-md rounded-2xl border shadow-2xl ${isDark ? "bg-[#080f23] border-white/10" : "bg-white border-slate-200"}`}>
+                    <div className={`flex items-center justify-between px-6 py-4 border-b ${isDark ? "border-white/10" : "border-slate-100"}`}>
+                      <h3 className={`font-bold text-base ${text}`}>Add New User</h3>
+                      <button onClick={() => setShowAddUser(false)} className={`p-1.5 rounded-lg transition-colors ${isDark ? "hover:bg-white/10 text-white/50 hover:text-white" : "hover:bg-slate-100 text-slate-400"}`}>
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <form onSubmit={handleAddUser} className="p-6 space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-xs font-medium mb-1.5 ${muted}`}>Full Name *</label>
+                          <input required value={addUserForm.name} onChange={(e) => setAddUserForm((f) => ({ ...f, name: e.target.value }))}
+                            placeholder="John Doe"
+                            className={`w-full px-3 py-2 rounded-lg text-sm border outline-none focus:ring-2 focus:ring-blue-500/40 ${inputBg}`} />
+                        </div>
+                        <div>
+                          <label className={`block text-xs font-medium mb-1.5 ${muted}`}>Phone</label>
+                          <input value={addUserForm.phone} onChange={(e) => setAddUserForm((f) => ({ ...f, phone: e.target.value }))}
+                            placeholder="+213 ..."
+                            className={`w-full px-3 py-2 rounded-lg text-sm border outline-none focus:ring-2 focus:ring-blue-500/40 ${inputBg}`} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1.5 ${muted}`}>Email *</label>
+                        <input required type="email" value={addUserForm.email} onChange={(e) => setAddUserForm((f) => ({ ...f, email: e.target.value }))}
+                          placeholder="user@example.com"
+                          className={`w-full px-3 py-2 rounded-lg text-sm border outline-none focus:ring-2 focus:ring-blue-500/40 ${inputBg}`} />
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1.5 ${muted}`}>Password *</label>
+                        <div className="relative">
+                          <input required type={showPassword ? "text" : "password"} minLength={6} value={addUserForm.password} onChange={(e) => setAddUserForm((f) => ({ ...f, password: e.target.value }))}
+                            placeholder="Min 6 characters"
+                            className={`w-full px-3 py-2 pr-10 rounded-lg text-sm border outline-none focus:ring-2 focus:ring-blue-500/40 ${inputBg}`} />
+                          <button type="button" onClick={() => setShowPassword((v) => !v)} className={`absolute right-3 top-1/2 -translate-y-1/2 ${muted}`}>
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-xs font-medium mb-1.5 ${muted}`}>Role *</label>
+                          <select value={addUserForm.role} onChange={(e) => setAddUserForm((f) => ({ ...f, role: e.target.value }))}
+                            className={`w-full px-3 py-2 rounded-lg text-sm border outline-none focus:ring-2 focus:ring-blue-500/40 ${inputBg}`}>
+                            <option value="client">Client</option>
+                            <option value="pentester">Pentester</option>
+                          </select>
+                        </div>
+                        {addUserForm.role === "client" && (
+                          <div>
+                            <label className={`block text-xs font-medium mb-1.5 ${muted}`}>Service Plan</label>
+                            <select value={addUserForm.serviceType} onChange={(e) => setAddUserForm((f) => ({ ...f, serviceType: e.target.value }))}
+                              className={`w-full px-3 py-2 rounded-lg text-sm border outline-none focus:ring-2 focus:ring-blue-500/40 ${inputBg}`}>
+                              <option value="starter">Starter</option>
+                              <option value="growth">Growth</option>
+                              <option value="enterprise">Enterprise</option>
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                      {addUserError && (
+                        <p className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">{addUserError}</p>
+                      )}
+                      <div className="flex gap-3 pt-1">
+                        <button type="button" onClick={() => setShowAddUser(false)}
+                          className={`flex-1 py-2 rounded-xl text-sm border transition-all ${isDark ? "border-white/10 text-white/50 hover:text-white hover:bg-white/5" : "border-slate-200 text-slate-500 hover:bg-slate-50"}`}>
+                          Cancel
+                        </button>
+                        <button type="submit" disabled={addUserLoading}
+                          className="flex-1 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-500/20">
+                          {addUserLoading ? "Creating…" : "Create User"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
               {}
               {loading ? (
                 <p className={muted}>{t("common.loading")}</p>
