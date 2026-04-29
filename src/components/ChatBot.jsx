@@ -52,39 +52,63 @@ const ChatBot = () => {
     setMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
 
+    const MODELS = [
+      'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
+      'deepseek/deepseek-r1:free',
+      'deepseek/deepseek-chat-v3-0324:free',
+    ];
+
     try {
       const history = messages.slice(1).map((m) => ({
         role: m.role,
         content: m.content,
       }));
 
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-          'HTTP-Referer': 'https://djabri777.github.io',
-          'X-Title': 'SecOps Assistant',
-        },
-        body: JSON.stringify({
-          model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            ...history,
-            { role: 'user', content: userMsg },
-          ],
-          max_tokens: 1024,
-          temperature: 0.8,
-        }),
-      });
+      let reply = null;
+      let lastError = null;
 
-      const data = await res.json();
+      for (const model of MODELS) {
+        try {
+          const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+              'HTTP-Referer': 'https://djabri777.github.io',
+              'X-Title': 'SecOps Assistant',
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: 'system', content: SYSTEM_PROMPT },
+                ...history,
+                { role: 'user', content: userMsg },
+              ],
+              max_tokens: 1024,
+              temperature: 0.8,
+            }),
+          });
 
-      if (!res.ok) throw new Error(data?.error?.message || `Error ${res.status}`);
+          const data = await res.json();
 
-      const reply = data.choices?.[0]?.message?.content;
+          if (!res.ok) {
+            lastError = data?.error?.message || `Error ${res.status}`;
+            continue;
+          }
 
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+          reply = data.choices?.[0]?.message?.content;
+          if (reply) break;
+        } catch (e) {
+          lastError = e.message;
+          continue;
+        }
+      }
+
+      if (reply) {
+        setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      } else {
+        throw new Error(lastError || 'All models unavailable');
+      }
     } catch (err) {
       console.error('ChatBot:', err.message);
       setMessages((prev) => [...prev, { role: 'assistant', content: `⚠️ ${err.message}` }]);
