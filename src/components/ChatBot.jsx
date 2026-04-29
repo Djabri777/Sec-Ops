@@ -1,61 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Loader, Shield } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const SYSTEM_PROMPT = `You are a smart, helpful AI assistant embedded in the SecOps website. You can answer ANY question on any topic — science, programming, math, history, cybersecurity, general knowledge, advice, and more. You are not limited to SecOps topics.
+const SYSTEM_PROMPT = `You are a helpful AI assistant for SecOps, an Algerian cybersecurity company. You can answer ANY question on any topic freely.
 
-When the user asks about SecOps specifically, use the information below. Otherwise, answer freely and helpfully like a general-purpose AI assistant.
+Company details when asked:
+- Name: SecOps, founded by Djabri
+- Email: gabiselt777@gmail.com | Phone: +213 665 869 346
+- Location: Algeria, available remotely
 
-== SECOPS COMPANY INFO ==
-Name: SecOps
-Founded by: Djabri (Certified Ethical Hacker, OSCP)
-Mission: Making enterprise-grade cybersecurity accessible to Algerian startups and SMEs.
-Email: gabiselt777@gmail.com
-Phone: +213 665 869 346
-Location: Algeria (remote consultations available nationwide)
+Services and pricing:
+- Starter Plan: 45,000 DZD — basic security scan, automated report, email support
+- Growth Plan: 120,000 DZD — full web application audit, manual expert review, quarterly re-testing, security roadmap (most popular)
+- Enterprise Plan: 400,000 DZD — full infrastructure audit, advanced simulation, incident response planning, team training
 
-== SECOPS SERVICES & PRICING ==
+Process: Scope → Scanning → Testing → Reporting → Follow-up
 
-1. Web Application Pentesting — Starter Plan: 45,000 DZD (one-time)
-   - OWASP Top 10 vulnerability assessment
-   - Authentication and authorization testing
-   - SQL injection and XSS detection
-   - Business logic flaw identification
-   - API security analysis
-   - Session management review
-   - Tools: Burp Suite Pro, OWASP ZAP, Nuclei, SQLMap
-
-2. Network Security Audits — Growth Plan: 120,000 DZD (per project) [Most Popular]
-   - Internal and external network scanning
-   - Firewall configuration review
-   - Wireless security assessment
-   - Port and service enumeration
-   - Network segmentation analysis
-   - VPN and remote access testing
-   - Tools: Nmap, Metasploit, Wireshark, Nessus
-
-3. Red Team Operations — Enterprise Plan: 400,000 DZD (per project)
-   - Full-scope attack simulation
-   - Social engineering campaigns
-   - Physical security testing
-   - Incident response validation
-   - Purple team collaboration
-   - Custom exploit development
-   - Tools: Cobalt Strike, Empire, Mimikatz, BloodHound
-
-== SECOPS PROCESS ==
-Step 1: Scope Definition
-Step 2: Reconnaissance & Scanning
-Step 3: Exploitation
-Step 4: Reporting
-Step 5: Support & Follow-up
-
-== BEHAVIOR RULES ==
-- Answer in the same language the user writes in (Arabic, English, or French)
-- Answer ANY question fully and helpfully — do not refuse or redirect unless truly necessary
-- Be conversational, clear, and concise
-- For SecOps pricing questions, always give the exact DZD amounts
-- For custom quotes, mention gabiselt777@gmail.com`;
+Rules:
+- Reply in the same language the user uses (Arabic, French, English)
+- Answer any question on any topic, not just cybersecurity
+- Be friendly, clear, and concise`;
 
 const SUGGESTIONS = [
   'What services do you offer?',
@@ -69,7 +33,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm the SecOps AI assistant 🛡️\nAsk me anything about our cybersecurity services, pricing, or how to protect your business.",
+      content: "Hi! I'm the SecOps AI assistant 🛡️\nAsk me anything about our services, pricing, or any other topic.",
     },
   ]);
   const [input, setInput] = useState('');
@@ -97,83 +61,64 @@ const ChatBot = () => {
     setLoading(true);
 
     try {
-      // Build conversation history (skip the initial welcome message)
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
       const history = messages.slice(1).map((m) => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
       }));
 
-      const contents = [
-        ...history,
-        { role: 'user', parts: [{ text: userMsg }] },
-      ];
-
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents,
-            generationConfig: {
-              temperature: 0.9,
-              maxOutputTokens: 1024,
-            },
-            safetySettings: [
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT',  threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_HARASSMENT',         threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH',        threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',  threshold: 'BLOCK_NONE' },
-            ],
+            contents: [...history, { role: 'user', parts: [{ text: userMsg }] }],
+            generationConfig: { temperature: 0.9, maxOutputTokens: 1024 },
           }),
         }
       );
 
       const data = await res.json();
-      const reply =
-        data.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "I couldn't process that. Please try again or contact us directly at gabiselt777@gmail.com";
+
+      if (!res.ok) throw new Error(data?.error?.message || `Error ${res.status}`);
+
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!reply) throw new Error(`Blocked: ${data.candidates?.[0]?.finishReason ?? data.promptFeedback?.blockReason ?? 'unknown'}`);
 
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            'Something went wrong. Please contact us directly at gabiselt777@gmail.com or +213 665 869 346.',
-        },
-      ]);
+    } catch (err) {
+      console.error('ChatBot:', err.message);
+      setMessages((prev) => [...prev, { role: 'assistant', content: `⚠️ ${err.message}` }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const bg      = isDark ? 'bg-[#0b1120]'      : 'bg-white';
-  const border  = isDark ? 'border-white/10'    : 'border-slate-200';
-  const msgBg   = isDark ? 'bg-white/5'         : 'bg-slate-100';
-  const msgText = isDark ? 'text-zinc-200'      : 'text-slate-800';
+  const bg      = isDark ? 'bg-[#0b1120]'   : 'bg-white';
+  const border  = isDark ? 'border-white/10' : 'border-slate-200';
+  const msgBg   = isDark ? 'bg-white/5'      : 'bg-slate-100';
+  const msgText = isDark ? 'text-zinc-200'   : 'text-slate-800';
   const inputBg = isDark
     ? 'bg-white/5 border-white/10 text-zinc-100 placeholder-zinc-500 focus:border-blue-400'
     : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500';
 
   return (
     <>
-      {/* ── Floating Toggle Button ── */}
+      {/* Toggle Button */}
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Toggle chat"
         className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
-          open
-            ? 'bg-slate-600 hover:bg-slate-500'
-            : 'bg-blue-500 hover:bg-blue-400 hover:shadow-blue-500/40 hover:shadow-2xl'
+          open ? 'bg-slate-600 hover:bg-slate-500' : 'bg-blue-500 hover:bg-blue-400 hover:shadow-blue-500/40 hover:shadow-2xl'
         } text-white`}
       >
         {open ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
       </button>
 
-      {/* ── Chat Window ── */}
+      {/* Chat Window */}
       {open && (
         <div
           className={`fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl shadow-2xl flex flex-col overflow-hidden border ${bg} ${border}`}
@@ -197,31 +142,19 @@ const ChatBot = () => {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-              >
-                {/* Avatar */}
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    msg.role === 'assistant' ? 'bg-blue-500/20' : isDark ? 'bg-white/10' : 'bg-slate-200'
-                  }`}
-                >
-                  {msg.role === 'assistant' ? (
-                    <Bot className="w-4 h-4 text-blue-400" />
-                  ) : (
-                    <User className="w-4 h-4 text-slate-400" />
-                  )}
+              <div key={i} className={`flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  msg.role === 'assistant' ? 'bg-blue-500/20' : isDark ? 'bg-white/10' : 'bg-slate-200'
+                }`}>
+                  {msg.role === 'assistant'
+                    ? <Bot className="w-4 h-4 text-blue-400" />
+                    : <User className="w-4 h-4 text-slate-400" />}
                 </div>
-
-                {/* Bubble */}
-                <div
-                  className={`max-w-[78%] px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                    msg.role === 'user'
-                      ? 'bg-blue-500 text-white rounded-2xl rounded-tr-sm'
-                      : `${msgBg} ${msgText} rounded-2xl rounded-tl-sm`
-                  }`}
-                >
+                <div className={`max-w-[78%] px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words ${
+                  msg.role === 'user'
+                    ? 'bg-blue-500 text-white rounded-2xl rounded-tr-sm'
+                    : `${msgBg} ${msgText} rounded-2xl rounded-tl-sm`
+                }`}>
                   {msg.content}
                 </div>
               </div>
@@ -242,11 +175,10 @@ const ChatBot = () => {
                 </div>
               </div>
             )}
-
             <div ref={bottomRef} />
           </div>
 
-          {/* Suggestion chips */}
+          {/* Suggestions */}
           {showSuggestions && (
             <div className={`px-4 pb-2 flex flex-wrap gap-2 flex-shrink-0 border-t ${border} pt-2`}>
               {SUGGESTIONS.map((s) => (
@@ -274,7 +206,7 @@ const ChatBot = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                placeholder="Ask about our services..."
+                placeholder="Ask me anything..."
                 className={`flex-1 px-3 py-2 rounded-xl text-sm outline-none border transition-colors ${inputBg}`}
               />
               <button
