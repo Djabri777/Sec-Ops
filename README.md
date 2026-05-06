@@ -1,6 +1,6 @@
 # 🛡️ SecOps: Cybersecurity Platform for Start-Ups & SMEs
 
- [Live Demo](https://djabri777.github.io/Sec-Ops-version-1/)  
+ [Live Demo](https://djabri777.github.io/Sec-Ops/)  
 **Project Status:** Final Year Graduation Project 🎓  
 **Location:** Djelfa, Algeria 🇩🇿  
 
@@ -39,10 +39,10 @@ To get this project running locally or deploy it to your own GitHub Pages, run t
 ```
 bash
 # 1. Clone the repository
-git clone [https://github.com/Djabri777/Sec-Ops-version-1.git](https://github.com/Djabri777/Sec-Ops-version-1.git)
+git clone [https://github.com/Djabri777/Sec-Ops.git](https://github.com/Djabri777/Sec-Ops.git)
 
 # 2. Enter the project directory
-cd Sec-Ops-version-1
+cd Sec-Ops
 
 # 3. Install all dependencies (React, Recharts, Tailwind, etc.)
 npm install

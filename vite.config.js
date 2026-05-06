@@ -16,7 +16,7 @@ export default defineConfig({
 
   // المسار الأساسي للتطبيق عند النشر على GitHub Pages
   // هذا يعني أن التطبيق سيعمل على: username.github.io/Sec-Ops-version-1/
-  base: '/Sec-Ops-version-1/',
+  base: '/Sec-Ops/',
 
   // إعدادات خادم التطوير المحلي
   server: {
