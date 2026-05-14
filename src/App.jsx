@@ -20,9 +20,12 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import NotFoundPage from './pages/NotFoundPage';             
 import ServerErrorPage from './pages/ServerErrorPage';       
 
-import AdminDashboard from './pages/AdminDashboard';         
-import PentesterDashboard from './pages/PentesterDashboard'; 
-import ClientDashboard from './pages/ClientDashboard';       
+import AdminDashboard from './pages/AdminDashboard';
+import PentesterDashboard from './pages/PentesterDashboard';
+import ClientDashboard from './pages/ClientDashboard';
+import PricingPage from './pages/PricingPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import PaymentFailedPage from './pages/PaymentFailedPage';
 
 import './App.css';
 
@@ -47,9 +50,12 @@ function App() {
                 <Route path="/signin" element={<SignInPage />} />                {}
                 <Route path="/signup" element={<SignUpPage />} />                {}
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} /> {}
-                <Route path="/reset-password" element={<ResetPasswordPage />} /> {}
-                <Route path="/500" element={<ServerErrorPage />} />              {}
-                <Route path="*" element={<NotFoundPage />} />                    {}
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/payment-success" element={<PaymentSuccessPage />} />
+                <Route path="/payment-failed" element={<PaymentFailedPage />} />
+                <Route path="/500" element={<ServerErrorPage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
 
               {}

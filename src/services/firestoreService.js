@@ -153,6 +153,15 @@ export const getVulnerabilities = async (auditId) => {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 };
 
+export const updateUserSubscription = async (uid, plan) => {
+  await updateDoc(doc(db, 'users', uid), {
+    subscriptionActive: true,
+    subscriptionPlan: plan,
+    subscriptionExpires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+    serviceType: plan,
+  });
+};
+
 export const updateVulnerabilityStatus = async (auditId, vulnId, status) => {
   await updateDoc(doc(db, "audits", auditId, "vulnerabilities", vulnId), { status });
 };
