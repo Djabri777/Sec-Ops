@@ -168,123 +168,276 @@ const ClientDashboard = () => {
   };
 
   const generatePDF = (audit, vulns, scans) => {
-    
     const date = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    const reportId = "RPT-" + Date.now().toString(36).toUpperCase();
 
-    const vulnsRows = vulns.map((v) => `
-      <tr>
-        <td>${v.title || "—"}</td>
-        <td><span style="color:${SEVERITY_COLOR[v.severity] || "#888"};font-weight:700;text-transform:capitalize">${v.severity || "—"}</span></td>
-        <td style="font-weight:600">${v.cvssScore ?? "—"}</td>
-        <td style="text-transform:capitalize">${(v.status || "—").replace("_", " ")}</td>
-        <td>${v.affectedAssets || "—"}</td>
-      </tr>`).join("");
+    const logoSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="52" height="62">
+      <defs>
+        <linearGradient id="shieldFill" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#dbeafe;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#bfdbfe;stop-opacity:1"/>
+        </linearGradient>
+      </defs>
+      <path d="M60 8 L104 26 L104 68 C104 92 84 112 60 122 C36 112 16 92 16 68 L16 26 Z"
+            fill="url(#shieldFill)" stroke="#2563eb" stroke-width="5" stroke-linejoin="round"/>
+    </svg>`;
 
-    const scansRows = scans.map((s) => `
-      <tr>
-        <td style="font-weight:600;text-transform:capitalize">${s.scanType || "—"}</td>
-        <td style="white-space:pre-wrap">${s.findings || "—"}</td>
-        <td>${s.timestamp?.toDate ? s.timestamp.toDate().toLocaleDateString() : "—"}</td>
-      </tr>`).join("");
+    const SEV = {
+      critical: { bg: "#fef2f2", border: "#fca5a5", text: "#991b1b", dot: "#ef4444", label: "Critical" },
+      high:     { bg: "#fff7ed", border: "#fdba74", text: "#92400e", dot: "#f97316", label: "High"     },
+      medium:   { bg: "#fefce8", border: "#fde047", text: "#713f12", dot: "#eab308", label: "Medium"   },
+      low:      { bg: "#f0fdf4", border: "#86efac", text: "#14532d", dot: "#22c55e", label: "Low"      },
+      info:     { bg: "#eff6ff", border: "#93c5fd", text: "#1e3a8a", dot: "#3b82f6", label: "Info"     },
+    };
+
+    const counts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+    vulns.forEach((v) => { if (counts[v.severity] !== undefined) counts[v.severity]++; });
+
+    const maxSev = counts.critical > 0 ? "Critical" : counts.high > 0 ? "High" : counts.medium > 0 ? "Medium" : counts.low > 0 ? "Low" : vulns.length > 0 ? "Info" : "Clean";
+    const riskColor = { Critical: "#ef4444", High: "#f97316", Medium: "#eab308", Low: "#22c55e", Info: "#3b82f6", Clean: "#10b981" };
+
+    const cvssBar = (score) => {
+      const pct = Math.min(100, ((parseFloat(score) || 0) / 10) * 100);
+      const col = pct >= 90 ? "#ef4444" : pct >= 70 ? "#f97316" : pct >= 40 ? "#eab308" : "#22c55e";
+      return `<div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:6px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:${col};border-radius:4px"></div>
+        </div>
+        <span style="font-weight:700;color:${col};min-width:28px">${score ?? "—"}</span>
+      </div>`;
+    };
+
+    const vulnCards = vulns.map((v, i) => {
+      const s = SEV[v.severity] || SEV.info;
+      return `
+      <div style="border:1px solid ${s.border};border-radius:12px;margin-bottom:16px;overflow:hidden;page-break-inside:avoid">
+        <div style="background:${s.bg};padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid ${s.border}">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="background:${s.dot};color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px">#${i + 1}</span>
+            <span style="font-size:15px;font-weight:700;color:#1e293b">${v.title || "Untitled"}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="background:${s.dot};color:#fff;font-size:11px;font-weight:800;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em">${s.label}</span>
+            <span style="font-size:11px;color:${s.text};font-weight:600;text-transform:capitalize">${(v.status || "open").replace("_", " ")}</span>
+          </div>
+        </div>
+        <div style="padding:16px 20px;background:#fff">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+            <div>
+              <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">CVSS Score</div>
+              ${cvssBar(v.cvssScore)}
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Affected Assets</div>
+              <div style="font-size:13px;color:#334155;font-weight:500">${v.affectedAssets || "—"}</div>
+            </div>
+          </div>
+          ${v.description ? `<div style="margin-bottom:10px"><div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Description</div><div style="font-size:13px;color:#475569;line-height:1.6">${v.description}</div></div>` : ""}
+          ${v.evidence ? `<div style="background:#f8fafc;border-radius:8px;padding:10px 14px;border-left:3px solid ${s.dot}"><div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Evidence</div><div style="font-size:12px;color:#475569;font-family:monospace;white-space:pre-wrap">${v.evidence}</div></div>` : ""}
+        </div>
+      </div>`;
+    }).join("");
+
+    const scanCards = scans.map((s) => `
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin-bottom:12px;page-break-inside:avoid">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:13px;font-weight:700;color:#1e293b;text-transform:capitalize">${s.scanType || "Scan"}</span>
+          <span style="font-size:11px;color:#94a3b8">${s.timestamp?.toDate ? s.timestamp.toDate().toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric"}) : "—"}</span>
+        </div>
+        <div style="font-size:13px;color:#475569;line-height:1.7;white-space:pre-wrap">${s.findings || "No findings recorded."}</div>
+      </div>`).join("");
 
     const html = `<!DOCTYPE html>
 <html lang="en"><head>
-  <meta charset="UTF-8">
-  <title>Security Audit Report – ${audit.title}</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:#1e293b; background:#fff; padding:48px; font-size:14px; line-height:1.6; }
-    .header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #3b82f6; padding-bottom:28px; margin-bottom:36px; }
-    .brand { display:flex; align-items:center; gap:14px; }
-    .brand-icon { width:48px; height:48px; background:linear-gradient(135deg,#3b82f6,#9333ea); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:22px; }
-    .brand-name { font-size:26px; font-weight:900; color:#1e293b; letter-spacing:-0.5px; }
-    .brand-sub { font-size:12px; color:#64748b; margin-top:2px; }
-    .report-meta { text-align:right; }
-    .report-label { font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:.1em; }
-    .report-date { font-size:13px; color:#475569; margin-top:4px; font-weight:500; }
-    h1 { font-size:28px; font-weight:900; color:#1e293b; margin-bottom:6px; letter-spacing:-0.5px; }
-    .subtitle { font-size:14px; color:#64748b; margin-bottom:32px; max-width:600px; }
-    .info-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:40px; }
-    .info-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px 20px; }
-    .info-label { font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
-    .info-value { font-size:15px; font-weight:700; color:#334155; }
-    .badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; text-transform:capitalize; background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
-    section { margin-bottom:40px; }
-    h2 { font-size:17px; font-weight:800; color:#1e293b; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #e2e8f0; display:flex; align-items:center; gap:8px; }
-    .count { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; background:#e2e8f0; border-radius:6px; font-size:13px; font-weight:700; color:#475569; }
-    table { width:100%; border-collapse:collapse; font-size:13px; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; }
-    th { background:#f1f5f9; color:#475569; font-weight:800; text-transform:uppercase; font-size:10px; letter-spacing:.08em; padding:12px 16px; text-align:left; border-bottom:1px solid #e2e8f0; }
-    td { padding:12px 16px; border-bottom:1px solid #f1f5f9; color:#334155; vertical-align:top; }
-    tr:last-child td { border-bottom:none; }
-    tr:hover td { background:#fafbfc; }
-    .empty { text-align:center; padding:32px; color:#94a3b8; font-size:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; }
-    .footer { margin-top:56px; padding-top:20px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; }
-    .footer-note { font-size:12px; color:#94a3b8; }
-    .confidential { background:#fff7ed; border:1px solid #fed7aa; border-radius:8px; padding:10px 16px; margin-bottom:32px; font-size:13px; color:#92400e; font-weight:600; }
-    @media print { body { padding:24px; } }
-  </style>
+<meta charset="UTF-8">
+<title>Security Report – ${audit.title}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',system-ui,sans-serif; color:#1e293b; background:#fff; font-size:14px; line-height:1.6; }
+  .cover { background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1e293b 100%); color:#fff; padding:56px 52px 48px; position:relative; overflow:hidden; }
+  .cover::before { content:''; position:absolute; top:-60px; right:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(59,130,246,.25),transparent 70%); }
+  .cover::after  { content:''; position:absolute; bottom:-40px; left:30%; width:200px; height:200px; background:radial-gradient(circle,rgba(139,92,246,.15),transparent 70%); }
+  .cover-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:48px; }
+  .logo { display:flex; align-items:center; gap:14px; }
+  .logo-name { font-size:22px; font-weight:900; letter-spacing:-.3px; }
+  .logo-name span { color:#2563eb; }
+  .logo-tag  { font-size:11px; color:#94a3b8; margin-top:2px; }
+  .conf-badge { background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.3); border-radius:6px; padding:5px 14px; font-size:11px; font-weight:700; color:#fca5a5; text-transform:uppercase; letter-spacing:.1em; }
+  .cover-title { font-size:32px; font-weight:900; letter-spacing:-.5px; line-height:1.2; margin-bottom:12px; }
+  .cover-desc  { font-size:14px; color:#94a3b8; max-width:580px; line-height:1.7; margin-bottom:36px; }
+  .cover-meta  { display:flex; gap:32px; flex-wrap:wrap; }
+  .meta-item   { display:flex; flex-direction:column; gap:3px; }
+  .meta-label  { font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.1em; }
+  .meta-value  { font-size:13px; font-weight:600; color:#e2e8f0; }
+  .risk-strip  { background:#0f172a; padding:20px 52px; display:flex; align-items:center; gap:24px; border-bottom:1px solid #1e293b; }
+  .risk-label  { font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:.1em; }
+  .risk-value  { font-size:16px; font-weight:900; }
+  .sev-pills   { display:flex; gap:10px; flex-wrap:wrap; margin-left:auto; }
+  .sev-pill    { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:4px 14px; }
+  .sev-dot     { width:8px; height:8px; border-radius:50%; }
+  .sev-txt     { font-size:12px; font-weight:600; color:#cbd5e1; }
+  .sev-n       { font-size:12px; font-weight:800; color:#f1f5f9; }
+  .body        { padding:44px 52px; }
+  .section     { margin-bottom:44px; }
+  .section-hdr { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #f1f5f9; }
+  .section-num { width:28px; height:28px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800; }
+  .section-title { font-size:17px; font-weight:800; color:#1e293b; }
+  .section-cnt   { margin-left:auto; background:#f1f5f9; border-radius:6px; padding:2px 10px; font-size:12px; font-weight:700; color:#64748b; }
+  .info-row    { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px; }
+  .info-box    { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px 18px; }
+  .info-lbl    { font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+  .info-val    { font-size:14px; font-weight:700; color:#334155; }
+  .status-badge { display:inline-block; padding:3px 10px; border-radius:16px; font-size:11px; font-weight:700; text-transform:capitalize; background:#dcfce7; color:#166534; }
+  .empty-state  { text-align:center; padding:36px; color:#94a3b8; font-size:14px; background:#f8fafc; border:1px dashed #e2e8f0; border-radius:12px; }
+  .page-footer  { margin-top:60px; padding:20px 52px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; }
+  .footer-l     { display:flex; align-items:center; gap:8px; font-size:12px; color:#64748b; }
+  .footer-r     { font-size:11px; color:#94a3b8; }
+  @media print {
+    .cover { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .risk-strip { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
 </head><body>
-  <div class="header">
-    <div class="brand">
-      <div class="brand-icon">S</div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-top">
+    <div class="logo">
+      ${logoSVG}
       <div>
-        <div class="brand-name">SecOps</div>
-        <div class="brand-sub">Security Operations Platform</div>
+        <div class="logo-name">Sec<span>Ops</span></div>
+        <div class="logo-tag">Security Operations Platform</div>
       </div>
     </div>
-    <div class="report-meta">
-      <div class="report-label">Security Audit Report</div>
-      <div class="report-date">Generated: ${date}</div>
+    <div class="conf-badge">&#9888; Confidential</div>
+  </div>
+  <div class="cover-title">${audit.title || "Security Audit Report"}</div>
+  <div class="cover-desc">${audit.description || "This document contains the findings and results of the security audit conducted by the SecOps team."}</div>
+  <div class="cover-meta">
+    <div class="meta-item"><div class="meta-label">Client</div><div class="meta-value">${audit.clientName || "—"}</div></div>
+    <div class="meta-item"><div class="meta-label">Lead Pentester</div><div class="meta-value">${audit.pentesterName || "—"}</div></div>
+    <div class="meta-item"><div class="meta-label">Date</div><div class="meta-value">${date}</div></div>
+    <div class="meta-item"><div class="meta-label">Report ID</div><div class="meta-value">${reportId}</div></div>
+  </div>
+</div>
+
+<!-- RISK STRIP -->
+<div class="risk-strip" style="color:#fff">
+  <div class="risk-label">Overall Risk Level</div>
+  <div class="risk-value" style="color:${riskColor[maxSev]}">${maxSev}</div>
+  <div class="sev-pills">
+    <div class="sev-pill"><div class="sev-dot" style="background:#ef4444"></div><span class="sev-txt">Critical</span><span class="sev-n">${counts.critical}</span></div>
+    <div class="sev-pill"><div class="sev-dot" style="background:#f97316"></div><span class="sev-txt">High</span><span class="sev-n">${counts.high}</span></div>
+    <div class="sev-pill"><div class="sev-dot" style="background:#eab308"></div><span class="sev-txt">Medium</span><span class="sev-n">${counts.medium}</span></div>
+    <div class="sev-pill"><div class="sev-dot" style="background:#22c55e"></div><span class="sev-txt">Low</span><span class="sev-n">${counts.low}</span></div>
+    <div class="sev-pill"><div class="sev-dot" style="background:#3b82f6"></div><span class="sev-txt">Info</span><span class="sev-n">${counts.info}</span></div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- 1. Audit Details -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-num">1</div>
+      <div class="section-title">Audit Details</div>
+    </div>
+    <div class="info-row">
+      <div class="info-box"><div class="info-lbl">Client</div><div class="info-val">${audit.clientName || "—"}</div></div>
+      <div class="info-box"><div class="info-lbl">Pentester</div><div class="info-val">${audit.pentesterName || "—"}</div></div>
+      <div class="info-box"><div class="info-lbl">Scope / Targets</div><div class="info-val">${audit.scope || "—"}</div></div>
+      <div class="info-box"><div class="info-lbl">Status</div><div class="info-val"><span class="status-badge">${(audit.status || "—").replace(/_/g, " ")}</span></div></div>
     </div>
   </div>
 
-  <div class="confidential">⚠ CONFIDENTIAL – This report contains sensitive security information. Handle with care.</div>
-
-  <h1>${audit.title}</h1>
-  <p class="subtitle">${audit.description || "No description provided."}</p>
-
-  <div class="info-grid">
-    <div class="info-card"><div class="info-label">Client</div><div class="info-value">${audit.clientName || "—"}</div></div>
-    <div class="info-card"><div class="info-label">Pentester</div><div class="info-value">${audit.pentesterName || "—"}</div></div>
-    <div class="info-card"><div class="info-label">Scope / Targets</div><div class="info-value">${audit.scope || "—"}</div></div>
-    <div class="info-card"><div class="info-label">Status</div><div class="info-value"><span class="badge">${(audit.status || "—").replace("_", " ")}</span></div></div>
+  <!-- 2. Executive Summary -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-num">2</div>
+      <div class="section-title">Executive Summary</div>
+    </div>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:22px 26px;font-size:14px;color:#475569;line-height:1.8">
+      This report presents the results of a security audit performed on <strong style="color:#1e293b">${audit.scope || "the target systems"}</strong> for <strong style="color:#1e293b">${audit.clientName || "the client"}</strong>.
+      The assessment identified a total of <strong style="color:#1e293b">${vulns.length} vulnerabilities</strong>
+      ${counts.critical > 0 ? `, including <strong style="color:#ef4444">${counts.critical} Critical</strong>` : ""}
+      ${counts.high > 0 ? ` and <strong style="color:#f97316">${counts.high} High</strong> severity issues` : ""}
+      ${vulns.length === 0 ? " — no vulnerabilities were discovered during this audit" : ""}.
+      ${counts.critical > 0 || counts.high > 0
+        ? " Immediate remediation of critical and high severity findings is strongly recommended."
+        : counts.medium > 0
+        ? " The identified findings should be addressed in a timely manner to reduce exposure."
+        : " The overall security posture appears satisfactory based on the scope of this audit."}
+      A total of <strong style="color:#1e293b">${scans.length} scan${scans.length !== 1 ? "s" : ""}</strong> were performed during this engagement.
+    </div>
   </div>
 
-  <section>
-    <h2>Vulnerabilities Found <span class="count">${vulns.length}</span></h2>
+  <!-- 3. Vulnerabilities -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-num">3</div>
+      <div class="section-title">Vulnerabilities</div>
+      <div class="section-cnt">${vulns.length} found</div>
+    </div>
     ${vulns.length === 0
-      ? '<div class="empty">No vulnerabilities reported for this audit.</div>'
-      : `<table>
-          <thead><tr><th>Title</th><th>Severity</th><th>CVSS</th><th>Status</th><th>Affected Assets</th></tr></thead>
-          <tbody>${vulnsRows}</tbody>
-        </table>`
+      ? '<div class="empty-state">&#10003; No vulnerabilities were reported for this audit.</div>'
+      : vulnCards
     }
-  </section>
-
-  <section>
-    <h2>Scan Results <span class="count">${scans.length}</span></h2>
-    ${scans.length === 0
-      ? '<div class="empty">No scan results recorded for this audit.</div>'
-      : `<table>
-          <thead><tr><th>Scan Type</th><th>Findings</th><th>Date</th></tr></thead>
-          <tbody>${scansRows}</tbody>
-        </table>`
-    }
-  </section>
-
-  <div class="footer">
-    <div class="footer-note">© ${new Date().getFullYear()} SecOps – Confidential Security Report</div>
-    <div class="footer-note">Empowering Algerian startups with enterprise security</div>
   </div>
+
+  <!-- 4. Scan Results -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-num">4</div>
+      <div class="section-title">Scan Results</div>
+      <div class="section-cnt">${scans.length} scans</div>
+    </div>
+    ${scans.length === 0
+      ? '<div class="empty-state">No scan results have been recorded for this audit.</div>'
+      : scanCards
+    }
+  </div>
+
+  <!-- 5. Recommendations -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-num">5</div>
+      <div class="section-title">Recommendations</div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:22px 26px">
+      ${counts.critical > 0 ? `<div style="display:flex;gap:10px;margin-bottom:12px"><span style="color:#ef4444;font-weight:800;font-size:13px">&#9679; Critical:</span><span style="font-size:13px;color:#475569">Address all ${counts.critical} critical finding(s) immediately. These represent a direct and urgent risk to operations.</span></div>` : ""}
+      ${counts.high > 0 ? `<div style="display:flex;gap:10px;margin-bottom:12px"><span style="color:#f97316;font-weight:800;font-size:13px">&#9679; High:</span><span style="font-size:13px;color:#475569">Remediate ${counts.high} high severity finding(s) within 7 days. Prioritize patch deployment and access control review.</span></div>` : ""}
+      ${counts.medium > 0 ? `<div style="display:flex;gap:10px;margin-bottom:12px"><span style="color:#eab308;font-weight:800;font-size:13px">&#9679; Medium:</span><span style="font-size:13px;color:#475569">Plan remediation of ${counts.medium} medium severity finding(s) within 30 days. Review configuration hardening guides.</span></div>` : ""}
+      ${counts.low > 0 ? `<div style="display:flex;gap:10px;margin-bottom:12px"><span style="color:#22c55e;font-weight:800;font-size:13px">&#9679; Low:</span><span style="font-size:13px;color:#475569">${counts.low} low severity finding(s) should be tracked and addressed during regular maintenance cycles.</span></div>` : ""}
+      ${vulns.length === 0 ? `<div style="font-size:13px;color:#1e40af;font-weight:600">&#10003; No vulnerabilities found. Continue regular security assessments to maintain this posture.</div>` : ""}
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #bfdbfe;font-size:12px;color:#64748b">
+        For further guidance or to schedule a follow-up assessment, contact SecOps at <strong>gabiselt777@gmail.com</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="page-footer">
+  <div class="footer-l">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="18" height="21" style="flex-shrink:0">
+      <path d="M60 8 L104 26 L104 68 C104 92 84 112 60 122 C36 112 16 92 16 68 L16 26 Z" fill="#dbeafe" stroke="#2563eb" stroke-width="6" stroke-linejoin="round"/>
+    </svg>
+    <span><strong>Sec<span style="color:#2563eb">Ops</span></strong> &mdash; Confidential Security Report &mdash; ${reportId}</span>
+  </div>
+  <div class="footer-r">&copy; ${new Date().getFullYear()} SecOps. All rights reserved. Empowering Algerian SMEs with enterprise security.</div>
+</div>
+
 </body></html>`;
 
     const w = window.open("", "_blank");
-    if (!w) return; 
-    w.document.write(html);   
-    w.document.close();       
-    w.focus();                
-    
-    setTimeout(() => { w.print(); }, 600);
+    if (!w) return;
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); }, 800);
   };
 
   const handleDownloadReport = async (audit) => {
