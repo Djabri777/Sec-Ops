@@ -1,9 +1,49 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Shield } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLang } from '../contexts/LanguageContext';
 
+const LANG_CONFIG = {
+  en: {
+    welcome:     "Hi! I'm the SecOps AI assistant 🛡️\nAsk me anything about our services, pricing, or any other topic.",
+    placeholder: "Ask me anything...",
+    subtitle:    "Powered by AI · Replies instantly",
+    suggestions: [
+      'What services do you offer?',
+      'How much does a pentest cost?',
+      'How do I get started?',
+      'What is the Growth plan?',
+    ],
+    systemLang: 'English',
+  },
+  ar: {
+    welcome:     "مرحباً! أنا مساعد SecOps الذكي 🛡️\nاسألني عن خدماتنا، الأسعار، أو أي موضوع آخر.",
+    placeholder: "اسألني أي شيء...",
+    subtitle:    "مدعوم بالذكاء الاصطناعي · يرد فوراً",
+    suggestions: [
+      'ما هي الخدمات التي تقدمونها؟',
+      'كم تكلفة اختبار الاختراق؟',
+      'كيف أبدأ؟',
+      'ما هي خطة النمو؟',
+    ],
+    systemLang: 'Arabic',
+  },
+  fr: {
+    welcome:     "Bonjour ! Je suis l'assistant IA de SecOps 🛡️\nPosez-moi toutes vos questions sur nos services, tarifs ou tout autre sujet.",
+    placeholder: "Posez-moi n'importe quelle question...",
+    subtitle:    "Propulsé par l'IA · Répond instantanément",
+    suggestions: [
+      'Quels services proposez-vous ?',
+      'Combien coûte un pentest ?',
+      'Comment démarrer ?',
+      'Qu\'est-ce que le plan Croissance ?',
+    ],
+    systemLang: 'French',
+  },
+};
 
-const SYSTEM_PROMPT = `You are a helpful AI assistant for SecOps, an Algerian cybersecurity company. Answer ANY question on any topic freely and helpfully.
+const buildSystemPrompt = (lang) => `You are a helpful AI assistant for SecOps, an Algerian cybersecurity company.
+IMPORTANT: You MUST respond ONLY in ${lang}. Never switch languages regardless of what the user writes.
 
 When asked about SecOps:
 - Starter Plan: 45,000 DZD — basic security scan, automated report, email support
@@ -11,29 +51,32 @@ When asked about SecOps:
 - Enterprise Plan: 400,000 DZD — full infrastructure audit, advanced simulation, team training
 - Contact: gabiselt777@gmail.com | +213 665 869 346 | Algeria (remote available)
 
-Always reply in the same language the user writes in (Arabic, French, or English). Be friendly, clear, and concise.`;
-
-const SUGGESTIONS = [
-  'What services do you offer?',
-  'How much does a pentest cost?',
-  'How do I get started?',
-  'What is the Growth plan?',
-];
+Be friendly, clear, and concise. Always respond in ${lang}.`;
 
 const ChatBot = () => {
+  const { isDark } = useTheme();
+  const { lang } = useLang();
+  const cfg = LANG_CONFIG[lang] || LANG_CONFIG.en;
+
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: "Hi! I'm the SecOps AI assistant 🛡️\nAsk me anything about our services, pricing, or any other topic.",
-    },
-  ]);
+  const [messages, setMessages] = useState([{ role: 'assistant', content: cfg.welcome }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
-  const { isDark } = useTheme();
+  const prevLang = useRef(lang);
+
+  // Reset chat when language changes
+  useEffect(() => {
+    if (prevLang.current !== lang) {
+      prevLang.current = lang;
+      const newCfg = LANG_CONFIG[lang] || LANG_CONFIG.en;
+      setMessages([{ role: 'assistant', content: newCfg.welcome }]);
+      setShowSuggestions(true);
+      setInput('');
+    }
+  }, [lang]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -80,7 +123,7 @@ const ChatBot = () => {
             body: JSON.stringify({
               model,
               messages: [
-                { role: 'system', content: SYSTEM_PROMPT },
+                { role: 'system', content: buildSystemPrompt(cfg.systemLang) },
                 ...history,
                 { role: 'user', content: userMsg },
               ],
@@ -151,7 +194,7 @@ const ChatBot = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-white text-sm">SecOps Assistant</p>
-              <p className="text-xs text-blue-100">Powered by AI · Replies instantly</p>
+              <p className="text-xs text-blue-100">{cfg.subtitle}</p>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-400" />
@@ -201,7 +244,7 @@ const ChatBot = () => {
           {/* Suggestions */}
           {showSuggestions && (
             <div className={`px-4 pb-2 flex flex-wrap gap-2 flex-shrink-0 border-t ${border} pt-2`}>
-              {SUGGESTIONS.map((s) => (
+              {cfg.suggestions.map((s) => (
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
@@ -226,7 +269,7 @@ const ChatBot = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
-                placeholder="Ask me anything..."
+                placeholder={cfg.placeholder}
                 className={`flex-1 px-3 py-2 rounded-xl text-sm outline-none border transition-colors ${inputBg}`}
               />
               <button

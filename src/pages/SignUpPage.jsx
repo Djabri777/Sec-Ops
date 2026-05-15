@@ -82,13 +82,10 @@ const SignUpPage = () => {
   return (
     
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 relative">
-      {}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-md w-full relative z-10">
 
-        {}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2">
             <Shield className="w-10 h-10 text-blue-400" strokeWidth={2} />
@@ -96,25 +93,20 @@ const SignUpPage = () => {
           </Link>
         </div>
 
-        {}
         <div className={`p-8 rounded-2xl backdrop-blur-sm border ${cardBg}`}>
-          {}
           <div className="mb-8">
             <h1 className={`text-3xl font-bold ${text} mb-2`}>{t("auth.createAccount")}</h1>
             <p className={muted}>{t("auth.createSubtitle")}</p>
           </div>
 
-          {}
           {error && (
             <div className="mb-6 flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               <AlertCircle className="w-4 h-4 shrink-0" /> {error}
             </div>
           )}
 
-          {}
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {}
             <div>
               <label htmlFor="name" className={`block text-sm font-medium ${label} mb-2`}>{t("auth.fullName")}</label>
               <div className="relative">
@@ -125,7 +117,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {}
             <div>
               <label htmlFor="email" className={`block text-sm font-medium ${label} mb-2`}>{t("auth.email")}</label>
               <div className="relative">
@@ -136,7 +127,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {}
             <div>
               <label htmlFor="phone" className={`block text-sm font-medium ${label} mb-2`}>{t("auth.phone")}</label>
               <div className="relative">
@@ -147,8 +137,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {}
-            {}
             <div>
               <label className={`block text-sm font-medium ${label} mb-2`}>{t("auth.serviceType")}</label>
               <div className="grid grid-cols-3 gap-2">
@@ -159,13 +147,12 @@ const SignUpPage = () => {
                     onClick={() => setFormData({ ...formData, serviceType: value })}
                     className={`relative px-3 py-3 rounded-xl border text-sm font-medium transition-all ${
                       formData.serviceType === value
-                        ? "bg-blue-500/20 border-blue-400/60 text-blue-400 shadow-sm shadow-blue-500/20" // الزر المختار
+                        ? "bg-blue-500/20 border-blue-400/60 text-blue-400 shadow-sm shadow-blue-500/20"
                         : isDark
                           ? "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:border-white/20"
                           : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:border-slate-300"
                     }`}
                   >
-                    {}
                     {formData.serviceType === value && (
                       <span className="absolute top-1.5 end-1.5 w-1.5 h-1.5 rounded-full bg-blue-400" />
                     )}
@@ -173,11 +160,9 @@ const SignUpPage = () => {
                   </button>
                 ))}
               </div>
-              {}
               <p className={`mt-1.5 text-xs ${muted}`}>{t(`auth.serviceDescriptions.${formData.serviceType}`)}</p>
             </div>
 
-            {}
             <div>
               <label htmlFor="password" className={`block text-sm font-medium ${label} mb-2`}>{t("auth.password")}</label>
               <div className="relative">
@@ -188,7 +173,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {}
             <div>
               <label htmlFor="confirmPassword" className={`block text-sm font-medium ${label} mb-2`}>{t("auth.confirmPassword")}</label>
               <div className="relative">
@@ -199,7 +183,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {}
             <div className="flex items-start">
               <input type="checkbox" id="terms" required
                 className="w-4 h-4 mt-1 rounded border-white/10 bg-white/5 text-blue-500 focus:ring-blue-500" />
@@ -211,7 +194,6 @@ const SignUpPage = () => {
               </label>
             </div>
 
-            {}
             <button type="submit" disabled={loading}
               className="w-full px-8 py-3 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2 text-white">
               <span>{loading ? t("auth.creating") : t("auth.createAccount")}</span>
@@ -219,7 +201,6 @@ const SignUpPage = () => {
             </button>
           </form>
 
-          {}
           <div className="mt-6 text-center">
             <p className={muted}>
               {t("auth.haveAccount")}{" "}
@@ -228,7 +209,6 @@ const SignUpPage = () => {
           </div>
         </div>
 
-        {}
         <div className={`mt-6 text-center text-sm ${muted}`}>
           <Lock className="w-4 h-4 inline-block me-1" /> {t("auth.dataSecure")}
         </div>
@@ -239,10 +219,10 @@ const SignUpPage = () => {
 
 const getErrorMsg = (code, t) => {
   switch (code) {
-    case "auth/email-already-in-use": return t("auth.errors.emailInUse");        
-    case "auth/invalid-email":        return t("auth.errors.invalidEmail");       
-    case "auth/weak-password":        return t("auth.errors.weakPassword");       
-    default:                          return t("auth.errors.registrationFailed"); 
+    case "auth/email-already-in-use": return t("auth.errors.emailInUse");
+    case "auth/invalid-email":        return t("auth.errors.invalidEmail");
+    case "auth/weak-password":        return t("auth.errors.weakPassword");
+    default:                          return t("auth.errors.registrationFailed");
   }
 };
 

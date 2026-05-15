@@ -70,6 +70,8 @@ const AdminDashboard = () => {
   const [deleting, setDeleting] = useState(null);
 
   const [showAddUser, setShowAddUser] = useState(false);
+  const [userRoleFilter, setUserRoleFilter] = useState("all");
+  const [userSearch, setUserSearch] = useState("");
   const [addUserForm, setAddUserForm] = useState({ name: "", email: "", password: "", role: "client", phone: "", serviceType: "starter" });
   const [addUserLoading, setAddUserLoading] = useState(false);
   const [addUserError, setAddUserError] = useState("");
@@ -510,6 +512,39 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
+              {/* Filter bar */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex gap-1.5">
+                  {["all", "client", "pentester", "admin"].map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => setUserRoleFilter(role)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all border ${
+                        userRoleFilter === role
+                          ? "bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-500/20"
+                          : isDark
+                          ? "bg-white/5 border-white/10 text-zinc-400 hover:text-zinc-100 hover:bg-white/10"
+                          : "bg-slate-100 border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-200"
+                      }`}
+                    >
+                      {role === "all" ? t("common.all") : t(`auth.roles.${role}`) || role}
+                      <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        userRoleFilter === role ? "bg-white/20" : isDark ? "bg-white/10" : "bg-slate-200"
+                      }`}>
+                        {role === "all" ? users.length : users.filter(u => u.role === role).length}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  placeholder="Search by name or email…"
+                  className={`flex-1 min-w-[180px] px-3 py-1.5 rounded-lg text-sm border outline-none transition-colors ${inputBg}`}
+                />
+              </div>
+
               {/* Add User Modal */}
               {showAddUser && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -593,19 +628,22 @@ const AdminDashboard = () => {
               {}
               {loading ? (
                 <p className={muted}>{t("common.loading")}</p>
-              ) : users.length === 0 ? (
-                
-                <div className={`p-12 rounded-2xl border ${cardBg} text-center ${muted}`}>
-                  <Users className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                  {t("dash.noUsers")}
-                </div>
-              ) : (
-                
+              ) : (() => {
+                const filtered = users.filter((u) => {
+                  const matchRole = userRoleFilter === "all" || u.role === userRoleFilter;
+                  const q = userSearch.toLowerCase();
+                  const matchSearch = !q || u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q);
+                  return matchRole && matchSearch;
+                });
+                return filtered.length === 0 ? (
+                  <div className={`p-12 rounded-2xl border ${cardBg} text-center ${muted}`}>
+                    <Users className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                    {userSearch || userRoleFilter !== "all" ? "No users match your filter." : t("dash.noUsers")}
+                  </div>
+                ) : (
                 <div className={`rounded-2xl border ${cardBg} overflow-hidden`}>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      {}
-                      {}
                       <thead>
                         <tr className={`border-b ${sideBorder} ${muted} text-xs uppercase tracking-wider`}>
                           {[t("dash.userName"), t("dash.userEmail"), t("dash.userRole"), t("dash.userSince")].map((h, i) => (
@@ -613,9 +651,8 @@ const AdminDashboard = () => {
                           ))}
                         </tr>
                       </thead>
-                      {}
                       <tbody className={`divide-y ${divider}`}>
-                        {users.map((u) => (
+                        {filtered.map((u) => (
                           <tr key={u.uid} className={`${rowHover} transition-colors`}>
                             {}
                             <td className="px-6 py-4">
@@ -644,7 +681,8 @@ const AdminDashboard = () => {
                     </table>
                   </div>
                 </div>
-              )}
+                );
+              })()}
             </div>
           )}
         </main>
