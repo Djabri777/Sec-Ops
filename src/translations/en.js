@@ -11,7 +11,7 @@ export default {
     signIn: "Sign In",            
     getStarted: "Get Started",    
     signOut: "Sign Out",          
-    toggleLang: "عربي",           
+    toggleLang: "عربي",
   },
 
   auth: {

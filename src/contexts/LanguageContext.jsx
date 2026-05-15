@@ -1,42 +1,27 @@
-
-
-import { createContext, useContext, useState, useEffect } from "react";
-
-import en from "../translations/en"; 
-import ar from "../translations/ar"; 
+import { createContext, useContext, useState } from "react";
+import { useTranslation } from "react-i18next";
+import "../i18n";
 
 const LanguageContext = createContext(null);
 
-const translations = { en, ar };
+const LANGS = ["en", "ar", "fr"];
 
 export const LanguageProvider = ({ children }) => {
-  
+  const { t, i18n } = useTranslation();
   const [lang, setLang] = useState("en");
 
-  useEffect(() => {
-    
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    
-    document.documentElement.lang = lang;
-  }, [lang]); 
-
-  const toggleLang = () => setLang((l) => (l === "en" ? "ar" : "en"));
+  const toggleLang = () => {
+    const next = LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length];
+    setLang(next);
+    i18n.changeLanguage(next);
+    document.documentElement.dir  = next === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = next;
+  };
 
   const isRTL = lang === "ar";
 
-  const t = (key) => {
-    
-    const keys = key.split(".");
-    
-    let val = translations[lang];
-    
-    for (const k of keys) val = val?.[k];
-    
-    return val || key;
-  };
-
   return (
-    <LanguageContext.Provider value={{ lang, toggleLang, isRTL, t }}>
+    <LanguageContext.Provider value={{ t, lang, toggleLang, isRTL }}>
       {children}
     </LanguageContext.Provider>
   );

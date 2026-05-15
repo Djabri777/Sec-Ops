@@ -11,7 +11,7 @@ export default {
     signIn: "تسجيل الدخول",       
     getStarted: "ابدأ الآن",       
     signOut: "تسجيل الخروج",       
-    toggleLang: "English",        
+    toggleLang: "FR",
   },
 
   auth: {
