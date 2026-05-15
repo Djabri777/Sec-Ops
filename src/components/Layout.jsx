@@ -14,19 +14,23 @@ import { useLang } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 
 const ROLE_PATHS = { admin: '/admin-dashboard', pentester: '/pentester-dashboard', client: '/client-dashboard' };
+const DEMO_EMAILS = ['client@gmail.com', 'client2@gmail.com', 'client3@gmail.com'];
 
 const Layout = () => {
-  
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); 
-  const { isDark, toggleTheme } = useTheme();    
-  const { t, toggleLang } = useLang();           
-  const { currentUser, userRole, logout } = useAuth(); 
-  const location = useLocation();                 
-  const navigate = useNavigate();                  
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
+  const { t, toggleLang } = useLang();
+  const { currentUser, userRole, userProfile, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isDemo = DEMO_EMAILS.includes(currentUser?.email);
+  const hasAccess = userRole !== 'client' || userProfile?.subscriptionActive || isDemo;
 
   const handleGoToDashboard = () => {
-    const path = ROLE_PATHS[userRole]; 
-    if (path) navigate(path);          
+    const path = ROLE_PATHS[userRole];
+    if (path) navigate(path);
   };
 
   const handleLogout = async () => {
@@ -106,16 +110,19 @@ const Layout = () => {
 
               {}
               {currentUser ? (
-                
                 <>
                   <Link to="/" className={`transition-colors ${isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-slate-600 hover:text-slate-900'}`}>
                     {t('nav.home')}
                   </Link>
-                  {}
-                  <button onClick={handleGoToDashboard} className={`px-5 py-2 rounded-lg font-medium transition-all ${isDark ? 'bg-blue-500 hover:bg-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/25' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
-                    {t('nav.dashboard')}
-                  </button>
-                  {}
+                  {hasAccess ? (
+                    <button onClick={handleGoToDashboard} className={`px-5 py-2 rounded-lg font-medium transition-all ${isDark ? 'bg-blue-500 hover:bg-blue-600 text-white hover:shadow-lg hover:shadow-blue-500/25' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
+                      {t('nav.dashboard')}
+                    </button>
+                  ) : (
+                    <Link to="/pricing" className="px-5 py-2 rounded-lg font-medium transition-all bg-cyan-500 hover:bg-cyan-600 text-white">
+                      Subscribe
+                    </Link>
+                  )}
                   <button onClick={handleLogout} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all text-red-400 hover:bg-red-400/10 border ${isDark ? 'border-red-400/20' : 'border-red-200'}`}>
                     <LogOut className="w-4 h-4" /> {t('common.signOut')}
                   </button>
@@ -169,9 +176,15 @@ const Layout = () => {
                   <Link to="/" className={`block ${isDark ? 'text-zinc-300 hover:text-zinc-100' : 'text-slate-600 hover:text-slate-900'}`} onClick={() => setMobileMenuOpen(false)}>
                     {t('nav.home')}
                   </Link>
-                  <button onClick={handleGoToDashboard} className="block w-full px-6 py-2 rounded-lg font-medium text-center bg-blue-600 hover:bg-blue-700 text-white">
-                    {t('nav.dashboard')}
-                  </button>
+                  {hasAccess ? (
+                    <button onClick={handleGoToDashboard} className="block w-full px-6 py-2 rounded-lg font-medium text-center bg-blue-600 hover:bg-blue-700 text-white">
+                      {t('nav.dashboard')}
+                    </button>
+                  ) : (
+                    <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="block w-full px-6 py-2 rounded-lg font-medium text-center bg-cyan-500 hover:bg-cyan-600 text-white">
+                      Subscribe
+                    </Link>
+                  )}
                   <button onClick={handleLogout} className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors">
                     <LogOut className="w-4 h-4" /> {t('common.signOut')}
                   </button>
