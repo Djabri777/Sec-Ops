@@ -1,3 +1,9 @@
 node_modules
 dist
 .env
+.env.*
+seed_demo.mjs
+seed_*.mjs
+seed_*.js
+*.secret.*
+*.key.*
