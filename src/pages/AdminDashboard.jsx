@@ -146,7 +146,15 @@ const AdminDashboard = () => {
       setShowAddUser(false);
       setAddUserForm({ name: "", email: "", password: "", role: "client", phone: "", serviceType: "starter" });
     } catch (err) {
-      setAddUserError(err.message);
+      const code = err.code || "";
+      if (code === "auth/email-already-in-use")
+        setAddUserError("This email is already registered. Use a different email.");
+      else if (code === "auth/invalid-email")
+        setAddUserError("Invalid email address.");
+      else if (code === "auth/weak-password")
+        setAddUserError("Password must be at least 6 characters.");
+      else
+        setAddUserError("Failed to create user. Please try again.");
     } finally {
       setAddUserLoading(false);
     }
