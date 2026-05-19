@@ -154,7 +154,7 @@ const AdminDashboard = () => {
       else if (code === "auth/weak-password")
         setAddUserError("Password must be at least 6 characters.");
       else
-        setAddUserError("Failed to create user. Please try again.");
+        setAddUserError(`Error: ${err.code || err.message}`);
     } finally {
       setAddUserLoading(false);
     }
